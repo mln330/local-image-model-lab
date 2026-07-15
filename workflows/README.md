@@ -21,11 +21,26 @@ Core placeholders:
 
 The included graph uses `FluxKontextImageScale`, which selects a compatible working size from the source aspect ratio. The 640-specific benchmark used a separate fixed `ImageScale` graph and is not represented by this template.
 
+### `flux2-klein-4b-edit-api.json`
+
+Core placeholders:
+
+| Placeholder | Example from the practical default |
+|---|---|
+| `DIFFUSION_MODEL` | `flux-2-klein-4b-fp8.safetensors` |
+| `TEXT_ENCODER` | `qwen_3_4b_fp4_flux2.safetensors` |
+| `VAE_MODEL` | `flux2-vae.safetensors` |
+| `MEGAPIXELS` | `0.8` |
+| `STEPS` | `6` |
+| `CFG` | `1.0` |
+
+Use this as the practical default for fast scene generation when no new exact scene text is required. NVFP4 filenames and nodes depend on the distribution you install; do not assume an FP8 graph and an NVFP4 custom-node graph are interchangeable.
+
 ### `nunchaku-qwen-image-edit-api.json`
 
 Core placeholders:
 
-| Placeholder | Example from the best observed run |
+| Placeholder | Example from the tested research run |
 |---|---|
 | `DIFFUSION_MODEL` | `nunchaku_qwen_image_edit_2511_ultimate_speed_fp4.safetensors` |
 | `TEXT_ENCODER` | `qwen_2.5_vl_7b_fp8_scaled.safetensors` |
@@ -42,20 +57,7 @@ Core placeholders:
 
 The exact `ultimate_speed` checkpoint used in the experiment was published by QuantFunc and is a community Nunchaku-compatible quantization, not an official Nunchaku release. Review both the [model card](https://huggingface.co/QuantFunc/Nunchaku-Qwen-Image-EDIT-2511) and runtime compatibility before use.
 
-### `flux2-klein-4b-edit-api.json`
-
-Core placeholders:
-
-| Placeholder | Example from the Great B run |
-|---|---|
-| `DIFFUSION_MODEL` | `flux-2-klein-4b-fp8.safetensors` |
-| `TEXT_ENCODER` | `qwen_3_4b_fp4_flux2.safetensors` |
-| `VAE_MODEL` | `flux2-vae.safetensors` |
-| `MEGAPIXELS` | `0.8` |
-| `STEPS` | `6` |
-| `CFG` | `1.0` |
-
-NVFP4 filenames depend on the distribution you install. Do not assume an FP8 graph and an NVFP4 custom-node graph are interchangeable.
+This route is included for reproducibility. It produced an excellent individual output but was slower and operationally heavier than native Qwen Lightning, so it is not the selected production default.
 
 ## Shared placeholders
 

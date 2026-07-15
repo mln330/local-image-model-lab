@@ -2,11 +2,11 @@
 
 ## Research question
 
-Can an RTX 5060 Ti 16 GB produce product-preserving image edits that are attractive enough for a professional online listing, with useful warm latency under 30 seconds?
+Can an RTX 5060 Ti 16 GB turn ordinary photos of physical products into attractive, source-faithful images with interactive warm latency, and which local route offers the best quality, speed, and operability for each type of edit?
 
 ## Test subject
 
-The primary source is a personalized rectangular children's room sign photographed on a granite counter.
+The first stress-test source was a personalized rectangular children's room sign photographed on a granite counter.
 
 It was selected because it combines several difficult requirements:
 
@@ -17,7 +17,9 @@ It was selected because it combines several difficult requirements:
 - clear rounded-rectangle geometry;
 - a source background that should not appear in the final scene.
 
-This is a single-product case study. It tests the failure modes well, but does not establish general performance across apparel, glass, jewelry, reflective metal, transparent objects, or human subjects.
+A July 15 follow-up added an owned 3D-printed rocket-shaped pen organizer photographed against an ordinary fabric background. It contains no source lettering, which makes it a better test of scene generation without conflating composition quality with text rendering.
+
+The two-product case study exposes useful failure modes but does not establish general performance across apparel, glass, jewelry, reflective metal, transparent objects, or human subjects.
 
 ## Requested image types
 
@@ -73,12 +75,14 @@ Each output was inspected at full resolution. Scores are subjective and designed
 
 An accepted route had to be useful for its declared purpose. A preview route could accept more identity risk if it was never treated as a publishable final. A fidelity route could use a simpler scene if it preserved the product reliably.
 
+System preference also considered setup complexity, custom-runtime fragility, checkpoint provenance, and model-switch behavior. The strongest single image was not automatically the preferred operating route.
+
 ## Acceptance gates
 
-### Final-quality route
+### Publishable scene route
 
 - warm end-to-end latency at or below 30 seconds;
-- exact personalized text in the inspected result;
+- exact source text when the source contains contractual text;
 - product silhouette and artwork remain recognizable;
 - no obvious compositing edge, extra objects fused into the product, or impossible support;
 - scene appropriate for the requested asset type;
@@ -89,6 +93,14 @@ An accepted route had to be useful for its declared purpose. A preview route cou
 - warm latency near or below 10 seconds;
 - composition useful for choosing a direction;
 - identity drift clearly disclosed and checked before promotion to a final asset.
+
+### Practical default route
+
+- warm varied-prompt latency near or below 12 seconds;
+- consistent visual appeal across more than one owned source;
+- no dependence on a product-category-specific mode;
+- setup and model provenance suitable for repeated operation;
+- clear routing boundary for text-sensitive requests.
 
 ## Variables explored
 

@@ -28,7 +28,9 @@ The first pipeline isolated the product, generated a separate background, and co
 - approximately 11-12 seconds warm;
 - strong preservation and useful scene changes.
 
-**Decision:** accepted as the general fidelity-first default (`Great A`).
+**Decision:** accepted as the quality favorite and general fidelity-first default.
+
+In the final system assessment this became the **quality favorite**. It was faster than the tested Nunchaku route and required a more conventional native graph.
 
 ### Lightning, three steps
 
@@ -99,7 +101,7 @@ The `ultimate_speed` and `balance` FP4 checkpoints in this section are community
 - approximately 25-27 seconds warm with varied prompts;
 - best complete balance of identity, scene integration, and listing appeal.
 
-**Decision:** accepted as `Best` final route.
+**Decision:** excellent individual result, but not selected for the operating stack. The route was slower than native Qwen Lightning and added custom-runtime and checkpoint-provenance overhead.
 
 ### Balanced FP4, 0.8 MP
 
@@ -112,6 +114,8 @@ The `ultimate_speed` and `balance` FP4 checkpoints in this section are community
 
 The FP4 diffusion model is only one part of the graph. The Qwen vision-language text encoder, VAE, LoRA stack, model transitions, custom-node implementation, and larger output target still contribute. "Ultimate speed" is a model variant, not an end-to-end service-level guarantee.
 
+The important correction is that image quality, latency, and operability must be evaluated separately. Nunchaku won one inspected output comparison. It did not win the system decision.
+
 ## 6. FLUX.2 Klein 4B
 
 ### Distilled FP8, 0.8 MP, six steps
@@ -120,7 +124,7 @@ The FP4 diffusion model is only one part of the graph. The Qwen vision-language 
 - excellent scene composition and aesthetics;
 - changed the personalized text and several artwork details in the inspected lifestyle result.
 
-**Decision:** accepted as `Great B` only where exact lettering is not contractual.
+**Decision:** accepted as the practical default for fast scene generation when the new scene does not require exact generated text. Validate existing product text and intricate artwork before publication.
 
 ### NVFP4, 0.8 MP, four steps
 
@@ -128,14 +132,14 @@ The FP4 diffusion model is only one part of the graph. The Qwen vision-language 
 - fastest accepted preview route;
 - visible identity risk.
 
-**Decision:** accepted as `Speed`.
+**Decision:** accepted as the fastest interactive preview and candidate-generation route.
 
 ### NVFP4, 1.2 MP, four steps
 
 - approximately six to seven seconds warm;
 - larger output with similar routing caveat.
 
-**Decision:** accepted as `Speed+`.
+**Decision:** accepted as the larger interactive route.
 
 ### NVFP4, approximately 2 MP, six steps
 
@@ -149,6 +153,21 @@ The FP4 diffusion model is only one part of the graph. The Qwen vision-language 
 - repeatedly rewrote product artwork and text.
 
 **Decision:** rejected for source-contract work.
+
+### July 15 follow-up with a second owned product
+
+The original FLUX interpretation leaned too heavily on one personalized sign. A follow-up used an owned 3D-printed rocket-shaped pen organizer with no source lettering and an ordinary fabric-background source photo.
+
+- FP8 distilled, 0.8 MP, six steps;
+- varied lifestyle prompt;
+- 8.4 seconds warm after the FLUX graph was resident;
+- strong scene composition, believable contact, preserved print texture, and no text problem;
+- a controlled synthetic-data variant completed in 7.6 seconds warm;
+- a cold model-family transition took much longer and was not treated as warm latency.
+
+**Decision:** the follow-up confirmed that FLUX.2 Klein was undersold by the text-heavy sign test. For text-free scene work it offered the best practical combination of speed, consistency, and aesthetics.
+
+The follow-up also reran the native Qwen template after a ComfyUI Desktop and PyTorch update. Two diagnostic runs took approximately 156-166 seconds because the graph repeatedly loaded or offloaded major components. Those values are preserved in `data/followup-runs-2026-07-15.json` but are not substituted for the earlier controlled 11-12 second warm benchmark. They are evidence that runtime version and model-residency behavior must be pinned and regression-tested.
 
 ## 7. LongCat Image Edit Turbo
 
@@ -185,15 +204,15 @@ The FP4 diffusion model is only one part of the graph. The Qwen vision-language 
 
 **Decision:** rejected for this workflow and configuration.
 
-## Final tiers
+## Final operating choices
 
-| Tier | Configuration | Role |
+| Decision | Configuration | Role |
 |---|---|---|
-| Best | QuantFunc Qwen 2511 ultimate-speed FP4 through Nunchaku, 0.8 MP | Text-sensitive final |
-| Great A | Native Qwen 2511 + Lightning, 768-class, two steps | General fidelity default |
-| Great B | FLUX.2 Klein distilled FP8, 0.8 MP, six steps | Aesthetic-first edit with validation |
-| Base | Native Qwen 2511 + Lightning, 640-class, two steps | Lower-resolution fidelity preview |
-| Speed+ | FLUX.2 Klein NVFP4, 1.2 MP, four steps | Larger creative preview |
-| Speed | FLUX.2 Klein NVFP4, 0.8 MP, four steps | Fastest accepted preview |
+| Practical default | FLUX.2 Klein distilled FP8, 0.8 MP, six steps | Fast, attractive text-free scene generation |
+| Quality favorite | Native Qwen 2511 + Lightning, 768-class, two steps | Product identity, artwork, and existing text |
+| Fast preview | FLUX.2 Klein NVFP4, 0.8 MP, four steps | Lowest-latency visual direction |
+| Larger fast preview | FLUX.2 Klein NVFP4, 1.2 MP, four steps | Interactive candidate with more pixels |
+| Lower-resolution fidelity route | Native Qwen 2511 + Lightning, 640-class, two steps | Fidelity-first preview when native detail can be lower |
+| Tested, not selected | QuantFunc Qwen 2511 FP4 through Nunchaku, 0.8 MP | Strong output, but slower and operationally heavier |
 
-The tier names describe recommended roles on the test workstation. They are not global rankings of the model families.
+These are workload roles on one workstation, not global rankings. The default route is chosen by scene text and identity risk, not by a universal tier label.

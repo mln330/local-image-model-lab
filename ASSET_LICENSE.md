@@ -1,6 +1,8 @@
 # Sample image terms
 
-The source product photograph and generated result images under `assets/` are included for research documentation, comparison, and commentary. No blanket license is granted for their reuse.
+The source product photographs and generated result images under `assets/` are included for research documentation, comparison, and commentary. No blanket license is granted for their reuse.
+
+The private-photo-cleanup source is intentionally not included. Only the approved generated result is published.
 
 Any rights in the photographed product, product artwork, trademarks, or third-party source material remain with their respective owners. The repository author claims rights only in material they created and have authority to license.
 

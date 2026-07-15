@@ -1,0 +1,105 @@
+{
+  "environment": {
+    "date": "2026-07-15",
+    "os": "Windows",
+    "gpu": "NVIDIA GeForce RTX 5060 Ti 16 GB",
+    "comfyui": "0.22.3",
+    "python": "3.12.11",
+    "pytorch": "2.10.0+cu130",
+    "timing_scope": "ComfyUI API queue to output available in history"
+  },
+  "sources": {
+    "rocket-organizer-public": {
+      "published_path": "assets/sources/rocket-organizer-source.png",
+      "published_sha256": "0fa40b13155704720d260418de407d68b6f01def9f97670ab90a69f04a10f746"
+    },
+    "rainbow-organizer-private": {
+      "published": false,
+      "original_sha256": "5a83335322af3dc2f6235c8c35095519735262e894c72b3b679e02d73e935b5f"
+    },
+    "planter-private": {
+      "published": false,
+      "original_sha256": "3bc30a7080661a6448d5c8bf1584d0e46c2e7bc8cb9cc3e6ca5b8dbe587bce91"
+    }
+  },
+  "runs": [
+    {
+      "id": "flux-rainbow-lifestyle-cold",
+      "source": "rainbow-organizer-private",
+      "model": "FLUX.2 Klein 4B FP8 distilled",
+      "megapixels": 0.8,
+      "steps": 6,
+      "cfg": 1.0,
+      "seed": 7731901,
+      "elapsed_seconds": 23.204,
+      "timing_class": "cold FLUX load",
+      "published": false,
+      "prompt": "Create a polished lifestyle photograph of the exact 3D-printed rainbow desk organizer from the reference image. Preserve its rectangular gray compartment box, sky-blue front panel, layered rainbow colors and black outlines, open storage geometry, visible 3D-print texture, and the same assortment of pens, markers, scissors, and rulers. Place it naturally on a bright modern craft desk beside a sketchbook and a small cup, with soft daylight from the left, realistic contact shadow, coherent reflections, shallow depth of field, and an uncluttered background. Keep the organizer as the clear subject and use a natural three-quarter camera angle. Do not add, remove, duplicate, resize, or redesign the organizer or its contents. No text, labels, badges, arrows, hands, or people."
+    },
+    {
+      "id": "flux-rocket-lifestyle-warm",
+      "source": "rocket-organizer-public",
+      "model": "FLUX.2 Klein 4B FP8 distilled",
+      "megapixels": 0.8,
+      "steps": 6,
+      "cfg": 1.0,
+      "seed": 7731902,
+      "elapsed_seconds": 8.395,
+      "timing_class": "warm varied prompt and source",
+      "output": "assets/results/flux2-klein-rocket-lifestyle.png",
+      "prompt": "Create a polished lifestyle photograph of the exact 3D-printed rocket-shaped pen organizer from the reference image. Preserve the cream body, red fins and top panel, black outlines, orange flame, circular black window, rectangular storage shape, visible 3D-print texture, and the same pens and markers. Place it naturally on a bright child-friendly homework desk with a closed notebook, a few colored pencils, soft morning window light, realistic contact shadow, coherent reflections, shallow depth of field, and a calm uncluttered background. Keep the organizer as the clear subject at a natural three-quarter camera angle. Do not add, remove, duplicate, resize, or redesign the organizer or its contents. No text, labels, badges, arrows, hands, or people."
+    },
+    {
+      "id": "qwen-rocket-lifestyle-route-transition",
+      "source": "rocket-organizer-public",
+      "model": "Native Qwen Image Edit 2511 mixed FP8 with Lightning LoRA",
+      "steps": 2,
+      "cfg": 1.0,
+      "denoise": 0.85,
+      "seed": 7731903,
+      "elapsed_seconds": 165.969,
+      "timing_class": "cold route transition in updated runtime; excluded from prior warm benchmark",
+      "output": "assets/results/qwen-rocket-lifestyle.png",
+      "prompt": "Create a polished lifestyle photograph of the exact 3D-printed rocket-shaped pen organizer from the reference image. Preserve the cream body, red fins and top panel, black outlines, orange flame, circular black window, rectangular storage shape, visible 3D-print texture, and the same pens and markers. Place it naturally on a bright child-friendly homework desk with a closed notebook, a few colored pencils, soft morning window light, realistic contact shadow, coherent reflections, shallow depth of field, and a calm uncluttered background. Keep the organizer as the clear subject at a natural three-quarter camera angle. Do not add, remove, duplicate, resize, or redesign the organizer or its contents. No text, labels, badges, arrows, hands, or people."
+    },
+    {
+      "id": "qwen-private-photo-cleanup",
+      "source": "planter-private",
+      "model": "Native Qwen Image Edit 2511 mixed FP8 with Lightning LoRA",
+      "steps": 2,
+      "cfg": 1.0,
+      "denoise": 0.85,
+      "seed": 7731904,
+      "elapsed_seconds": 155.426,
+      "timing_class": "diagnostic updated-runtime run; excluded from prior warm benchmark",
+      "output": "assets/results/qwen-private-photo-cleanup.png",
+      "prompt": "Edit this private home photo into a clean interior photograph while preserving the exact white 3D-printed creature planter, its green saucer, the pothos plant, leaf shapes, stems, and visible print texture. Remove the television, sports broadcast, cables, and distracting room clutter. Place the planter naturally on a simple light-oak shelf against a warm off-white wall, with soft indirect window light, realistic contact shadow, calm neutral styling, and shallow depth of field. Keep the object and plant physically believable. No text, logos, people, extra plants, labels, badges, or decorative clutter."
+    },
+    {
+      "id": "flux-game-asset-route-transition",
+      "source": "rocket-organizer-public",
+      "model": "FLUX.2 Klein 4B FP8 distilled",
+      "megapixels": 0.8,
+      "steps": 6,
+      "cfg": 1.0,
+      "seed": 7731905,
+      "elapsed_seconds": 43.113,
+      "timing_class": "cold route transition from Qwen",
+      "output": "assets/results/flux2-klein-game-asset.png",
+      "prompt": "Transform the rocket-shaped desk organizer from the reference into a polished isometric game inventory asset for a cheerful space-exploration game. Preserve the cream, red, black, and orange color palette, circular window, side fins, flame motif, and recognizable rocket silhouette, but simplify the object into a clean stylized 3D game prop. Show the prop alone at a three-quarter isometric angle on a transparent-looking neutral light-gray studio backdrop with a soft oval shadow. Crisp edges, readable silhouette, production-ready concept art, no environment. No text, labels, interface frame, badge, hands, people, watermark, or extra objects."
+    },
+    {
+      "id": "flux-synthetic-data-warm",
+      "source": "rocket-organizer-public",
+      "model": "FLUX.2 Klein 4B FP8 distilled",
+      "megapixels": 0.8,
+      "steps": 6,
+      "cfg": 1.0,
+      "seed": 7731906,
+      "elapsed_seconds": 7.615,
+      "timing_class": "warm varied prompt",
+      "output": "assets/results/flux2-klein-synthetic-data.png",
+      "prompt": "Create a controlled synthetic-data photograph of the same exact 3D-printed rocket-shaped desk organizer from the reference. Preserve the cream body, red fins and top panel, black outlines, orange flame, circular black window, rectangular storage geometry, visible print-layer texture, and the same pens and markers. Show it from a high three-quarter inspection angle on a neutral medium-gray seamless surface under diffuse overcast-style lighting, with a soft contact shadow and the complete silhouette visible. Clean calibration-style framing, no dramatic styling, no other objects. Do not add, remove, duplicate, resize, or redesign the organizer or its contents. No text, labels, ruler, color chart, hands, people, watermark, or interface elements."
+    }
+  ]
+}

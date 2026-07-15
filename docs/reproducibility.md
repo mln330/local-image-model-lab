@@ -44,30 +44,29 @@ The workflow templates use placeholders instead of hard-coded local filenames. D
 | Template | Additional requirement | Intended role |
 |---|---|---|
 | `qwen-image-edit-lightning-api.json` | Qwen edit model, Qwen VL encoder, VAE, Lightning LoRA | Native fidelity-first route |
-| `nunchaku-qwen-image-edit-api.json` | ComfyUI-nunchaku and compatible Nunchaku wheel/model | Highest-quality accepted final |
-| `flux2-klein-4b-edit-api.json` | FLUX.2 Klein model, Qwen 3 text encoder, FLUX.2 VAE | Fast aesthetic/preview route |
+| `flux2-klein-4b-edit-api.json` | FLUX.2 Klein model, Qwen 3 text encoder, FLUX.2 VAE | Practical text-free scene route and fast preview |
+| `nunchaku-qwen-image-edit-api.json` | ComfyUI-nunchaku and compatible Nunchaku wheel/model | Reproduce the tested experimental route; not the selected default |
 
 These are ComfyUI **API-format** graphs with `{{PLACEHOLDERS}}`; they are not UI-format workflow exports.
 
 ## Run a template
 
-Start ComfyUI with its API reachable on the local machine, commonly `http://127.0.0.1:8188`.
+Start ComfyUI with its API reachable on the local machine, commonly `http://127.0.0.1:8188`. ComfyUI Desktop may select a different port; pass it through `--server`.
 
 ```powershell
 python scripts/run_workflow.py `
-  --template workflows/qwen-image-edit-lightning-api.json `
+  --server http://127.0.0.1:8000 `
+  --template workflows/flux2-klein-4b-edit-api.json `
   --image path/to/source.jpg `
-  --prompt "Keep the exact product unchanged. Place it on a clean studio surface." `
-  --set DIFFUSION_MODEL=qwen_image_edit_2511_fp8mixed.safetensors `
-  --set TEXT_ENCODER=qwen_2.5_vl_7b_fp8_scaled.safetensors `
-  --set VAE_MODEL=qwen_image_vae.safetensors `
-  --set LORA_NAME=Qwen-Image-Lightning-2steps.safetensors `
-  --set LORA_STRENGTH=1 `
-  --set STEPS=2 `
+  --prompt "Preserve the exact object and place it naturally on a bright desk. No text." `
+  --set DIFFUSION_MODEL=flux-2-klein-4b-fp8.safetensors `
+  --set TEXT_ENCODER=qwen_3_4b_fp4_flux2.safetensors `
+  --set VAE_MODEL=flux2-vae.safetensors `
+  --set MEGAPIXELS=0.8 `
+  --set STEPS=6 `
   --set CFG=1 `
-  --set DENOISE=0.85 `
   --set SEED=42 `
-  --set OUTPUT_PREFIX=local-lab/qwen
+  --set OUTPUT_PREFIX=local-lab/flux
 ```
 
 Filenames are examples. Use names that match the files installed in your ComfyUI model directories and the recommendations on the relevant model card.
@@ -78,10 +77,13 @@ Filenames are examples. Use names that match the files installed in your ComfyUI
 2. Run the workflow once and record the end-to-end time.
 3. Repeat at least three times without changing parameters.
 4. Change the prompt while keeping the graph constant and repeat.
-5. Inspect every output at native resolution.
-6. Record peak VRAM and utilization separately from latency.
-7. Save the prompt JSON embedded in the output PNG when available.
-8. Report errors and rejected images, not only successful samples.
+5. Change the source image while keeping the graph constant and repeat.
+6. Inspect every output at native resolution.
+7. Record peak VRAM and utilization separately from latency.
+8. Save the prompt JSON embedded in the output PNG when available.
+9. Report errors and rejected images, not only successful samples.
+
+Do not average a model-family transition into warm latency. Report cold process start, cold route switch, warm varied prompt, and warm repeated prompt separately.
 
 ## Known compatibility risks
 

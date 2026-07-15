@@ -1,82 +1,127 @@
 # Hardware selection
 
-## Decision
+## The machine and the purchase
 
 The experiment workstation uses a **PNY Dual Fan OC GeForce RTX 5060 Ti 16 GB GDDR7** purchased refurbished for **$530** from [Newegg](https://www.newegg.com/pny-technologies-inc-rtx-5060-ti-16gb-dual-fan-oc-geforce-rtx-5060-ti-graphics-card-double-fans/p/N82E16814985024?item=N82E16814985024).
 
-The decision was based on workload fit, not a claim that the 5060 Ti is the best GPU for every local-AI user.
+The purchase goal was broader than image generation. The card needed to support:
 
-## Workload priorities
+- current image-generation and image-editing models;
+- local text and multimodal LLMs;
+- coding assistants and agent experiments;
+- speech recognition and synthesis;
+- embeddings, retrieval, and evaluation workloads;
+- Windows tools with a mature acceleration path;
+- future experiments that were not known at purchase time.
 
-In order:
+The priorities were:
 
-1. Enough VRAM for modern image-editing pipelines.
-2. Reliable Windows support across CUDA, PyTorch, ComfyUI, and custom nodes.
-3. Support for low-precision Blackwell paths such as NVFP4.
-4. Acquisition cost appropriate for an enthusiast/developer workstation.
-5. Power and cooling that do not require rebuilding the rest of the machine.
-6. Throughput.
+1. enough VRAM to avoid immediately limiting every experiment;
+2. mature CUDA, PyTorch, and ComfyUI support;
+3. useful low-precision support;
+4. affordable entry cost;
+5. moderate power and desktop practicality.
 
-The ordering matters. Moving from a 16 GB 5060 Ti to a faster 12 GB 5070 would improve compute while making the primary constraint worse.
+## Why 8 GB was too small
 
-## Comparison at the time of publication
+Eight gigabytes can run useful models. It would not support the range of work intended here without frequent compromises:
 
-| GPU | VRAM | Memory | Board power | Official launch/SEP | Local-image assessment |
-|---|---:|---|---:|---:|---|
-| RTX 5060 Ti 16 GB | 16 GB | GDDR7 | 180 W | $429 | Best fit for this Windows/CUDA experiment; enough VRAM for the accepted quantized routes |
-| RTX 5070 | 12 GB | GDDR7 | 250 W | $549 | Faster compute, but the 12 GB ceiling is a meaningful regression for these graphs |
-| RTX 5070 Ti | 16 GB | GDDR7 | 300 W | $749 | Stronger version of the same basic capacity tier at higher cost and power |
-| RTX 5080 | 16 GB | GDDR7 | 360 W | $999 | Much faster, but still 16 GB and outside the affordable-entry goal |
-| RTX 3090 | 24 GB | GDDR6X | 350 W | $1,499 | Excellent capacity if a trustworthy used card and adequate PSU/cooling are available |
-| Radeon RX 9060 XT 16 GB | 16 GB | GDDR6 | 160 W | $349 SEP | Outstanding paper value; exact Windows/custom-node compatibility needs verification |
-| Radeon RX 9070 | 16 GB | GDDR6 | 220 W | $549 SEP | Attractive hardware, with more runtime friction for this CUDA-oriented test matrix |
-| Radeon RX 9070 XT | 16 GB | GDDR6 | 304 W | $599 SEP | Strong compute/value; same software-stack caveat |
-| Intel Arc B580 | 12 GB | GDDR6 | 190 W | $249 | Excellent entry price and improving XPU support, but less headroom and a narrower tested node ecosystem |
+- more aggressive quantization;
+- smaller context windows for LLMs;
+- CPU offload and transfer stalls;
+- lower image resolution;
+- fewer resident components;
+- older or smaller model families;
+- less room for multimodal encoders and adapters.
 
-Prices are launch prices or suggested e-tail prices, not a statement about current street pricing. Used prices vary by market and condition.
+The problem is not whether a graph can be forced to run. It is whether the graph is pleasant enough to evaluate and integrate.
 
-## Why 16 GB was the floor
+## Why 12 GB was the minimum
 
-The native Qwen image transformer used in the tests is roughly 19 GB, while the vision-language text encoder is another large component. The complete graph also needs a VAE, adapters, intermediate tensors, and runtime overhead.
+Twelve gigabytes looked like the minimum useful tier. It offers significantly more freedom than 8 GB and can run strong 9B- to 12B-class LLM quantizations. It is still tight for the image graphs tested here.
 
-ComfyUI can make that graph run on 16 GB by dynamically loading and offloading components. That is very different from saying the complete graph fits comfortably in 16 GB.
+The RTX 5070 illustrates the trade: it offers more raw compute than the 5060 Ti but only 12 GB. For a memory-bound local-AI workload, paying more to reduce capacity was not attractive.
+
+## Why 16 GB was the right deal
+
+Sixteen gigabytes did not make memory irrelevant. It made the interesting experiments possible:
+
+- FLUX.2 Klein 4B FP8 and NVFP4 routes fit and ran quickly;
+- native Qwen Image Edit could run through dynamic model management;
+- a 12B LLM at a useful 4-bit or 5-bit quantization had room for context and runtime overhead;
+- larger multimodal and MoE experiments became possible with careful quantization;
+- model comparison did not begin from the smallest available option.
+
+The 16 GB refurbished card was therefore a capacity purchase first and a gaming-tier purchase second.
+
+## Current price snapshot
+
+These are ordinary U.S. prices observed on **July 15, 2026**. They are a dated shopping snapshot, not a forecast. The bands exclude isolated in-store clearance prices and extreme third-party marketplace listings.
+
+| GPU | VRAM | Board power | Launch/SEP | Observed July 2026 band | Local-AI assessment |
+|---|---:|---:|---:|---:|---|
+| RTX 5060 Ti 8 GB | 8 GB | 180 W | $379 | $360-$395 | Compute is affordable; capacity is too restrictive for this experiment mix |
+| RTX 5060 Ti 16 GB | 16 GB | 180 W | $429 | $565-$570 | Best affordable CUDA capacity tier in this comparison; the test card was $530 refurbished |
+| RTX 5070 | 12 GB | 250 W | $549 | $550-$670 | Faster compute but less memory, which makes the primary constraint worse |
+| RTX 5070 Ti | 16 GB | 300 W | $749 | $900-$1,100 | Faster at the same capacity, with much higher acquisition cost |
+| RTX 5080 | 16 GB | 360 W | $999 | $1,250-$1,600 | Substantially faster but still capped at 16 GB |
+| Used RTX 3090 | 24 GB | 350 W | $1,499 | $1,189-$1,292 fair asking | Excellent headroom; high power, age, used risk, and unusually volatile pricing |
+| RX 9060 XT 16 GB | 16 GB | 160 W | $349 | $400-$460 | Excellent capacity value if the exact backend and node graph are validated |
+| RX 9070 XT | 16 GB | 304 W | $599 | $690-$850 | Strong performance/value with more software validation required for this Windows stack |
+| Intel Arc B580 | 12 GB | 190 W | $249 | $300-$310 | Attractive entry cost, less headroom, and narrower tested custom-node support |
+
+The observed bands use a multi-retailer price tracker for the 5060 Ti, Best Buy listings for the 5070 family, Newegg listings for the 5080 and AMD/Intel cards, and a 301-listing used-market sample for the 3090. Source links and caveats are in [References](references.md).
+
+## Why image models consume more than their headline size
+
+The tested graphs included combinations of:
+
+- a diffusion transformer;
+- a Qwen vision-language text encoder;
+- a VAE;
+- a Lightning LoRA;
+- source-image latents;
+- attention and sampling buffers;
+- custom runtime allocations;
+- output decode and save operations.
+
+The native Qwen transformer was roughly 19 GB in its distributed mixed-FP8 form, and its vision-language encoder was another substantial component. ComfyUI made the graph run through dynamic loading and offload. That is not the same as keeping the complete graph resident.
 
 Observed consequences:
 
-- VRAM peaked around 15.3 GB in a monitored native Qwen run.
-- Average GPU utilization was only about 47% even though it reached 99% during active kernels.
-- Cold runs and prompt changes exposed model-transfer and text-encoding costs.
-- `--highvram` was counterproductive and caused the Qwen graph to hang.
-- Quantized models improved feasibility, but the text encoder and graph transitions remained significant.
+- VRAM peaked near 15.3 GB in one monitored native Qwen run.
+- Average GPU utilization was about 47%, with a 99% peak.
+- Prompt changes could trigger text-encoding work and model transfers.
+- Repeated prompts could appear faster because conditioning was reused.
+- `--highvram` was counterproductive for the Qwen graph and caused it to hang.
+- Switching between Qwen and FLUX created large cold-transition penalties.
 
-A 24 GB card would reduce some of this pressure. A 12 GB card would increase it.
+This is why a 4B image model does not imply a 4B-sized application.
 
-## Why not the used RTX 3090?
+## Broader local-LLM implications
 
-For a dedicated local-AI box, a good used 3090 remains one of the most interesting alternatives because 24 GB changes which models can remain resident.
+[Gemma 4 12B](https://huggingface.co/google/gemma-4-12B) is approximately 24 GB in BF16. Four-bit weights reduce the raw storage to roughly 6 GB before quantization metadata and runtime allocations, but the context cache, multimodal data, and serving framework still consume VRAM. An 8 GB card can make it run only with tight tradeoffs. Twelve gigabytes is a practical minimum; 16 GB leaves useful breathing room.
 
-The tradeoffs are not trivial:
+[Qwen3.6](https://huggingface.co/collections/Qwen/qwen36) currently includes a 27B dense model and a 35B-A3B MoE model. The MoE activates fewer parameters per token, but total weight storage and KV cache still matter. A 16 GB card requires a low-bit quantization, and context length must be chosen for available memory rather than copied from the maximum model specification.
 
-- 350 W board power versus 180 W for the 5060 Ti;
-- larger PSU and cooling requirements;
-- variable card history and warranty;
-- older architecture and no Blackwell-native FP4 path;
-- used prices that can erase the apparent value advantage.
+The card can also host smaller models alongside applications, embeddings, speech pipelines, and development tools without treating every megabyte as an emergency. That flexibility was part of the purchase value.
 
-Someone comfortable buying used hardware and prioritizing model capacity over efficiency may reasonably choose the 3090 instead.
+## NVIDIA, AMD, and Intel
 
-## Why not AMD or Intel?
+The hardware-only answer and the system answer differ.
 
-This is a software-support decision, not a dismissal of the hardware.
+AMD's 16 GB cards offer compelling dollars per gigabyte. Intel's B580 offers 12 GB at an accessible price. For a Linux-first project with time to validate backends, both deserve investigation.
 
-ComfyUI supports manual installs across NVIDIA, AMD, and Intel hardware. Its Windows desktop and portable paths remain most straightforward on NVIDIA. AMD's Windows PyTorch/ROCm support now includes current Radeon generations, but AMD documents that the entire ROCm stack is not yet supported on Windows. Intel Arc has native `torch.xpu` support, but individual custom nodes and quantized kernels still need verification.
+This experiment used Windows, ComfyUI Desktop, PyTorch, CUDA-oriented model releases, and custom nodes. NVIDIA provided the shortest path from model card to working graph. That ecosystem advantage was worth money here, even though it does not make NVIDIA the universal value winner.
 
-For a fresh Linux build, or for someone willing to validate each node, the RX 9060 XT 16 GB is particularly worthy of testing. For this Windows experiment, CUDA removed enough uncertainty to justify paying more.
+## Conclusion
 
-## Purchase conclusion
+The RTX 5060 Ti 16 GB was the best low-friction, capacity-first option available for this project at the time of purchase. The result should not be generalized into "the best AI GPU."
 
-The 5060 Ti 16 GB was the best **low-friction fit** I could acquire for the project. The phrase is intentionally narrower than "best value." Its most important properties were 16 GB of VRAM, Blackwell precision support, mature CUDA compatibility, and moderate power.
+The lasting purchasing rule is more useful:
 
-The $530 refurbished price should not be used as a market recommendation. It is the actual cost basis for the results in this repository.
-
-See [References](references.md) for primary specification and runtime sources.
+1. choose the workloads and model families first;
+2. total the whole graph, not only the largest checkpoint;
+3. treat VRAM as the first hard constraint;
+4. price the software ecosystem and your validation time;
+5. buy enough capacity for the experiments you have not planned yet.

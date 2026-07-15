@@ -1,242 +1,295 @@
 ---
-title: "What Can a $530 Consumer GPU Actually Do With Local Image AI?"
-description: "A hands-on investigation into image editing, quantization, ComfyUI, and the real quality/latency tradeoffs of running open models on an RTX 5060 Ti 16 GB."
-author: Mike Newman
-date: 2026-07-15
+title: "What I Learned Running Image-Editing Models on a $530 Consumer GPU"
+description: "A hands-on investigation into FLUX.2 Klein, Qwen Image Edit, prompt engineering, VRAM, cost, and what affordable local AI can actually do."
+author: "Mike Newman"
+date: "2026-07-15"
 ---
 
-# What Can a $530 Consumer GPU Actually Do With Local Image AI?
+# What I Learned Running Image-Editing Models on a $530 Consumer GPU
 
-I have been fascinated by the gap between the way local AI is discussed and the way it actually feels to use.
+I started this experiment in late May 2026 with a question that sounded simple: could I take an ordinary phone photo of a 3D-printed product and turn it into a genuinely attractive Etsy listing photograph without sending it to a cloud image service?
 
-One version of the story says you need a datacenter GPU, a cloud budget, and a machine-learning team. Another says you can download a model, click a button, and have a private creative studio running under your desk. Both versions contain some truth. Neither one tells a developer what happens between installing the software and producing something genuinely useful.
+The source photo did not need to be terrible. It just needed to be normal. Maybe the product was sitting on a granite counter, the light was coming from the wrong direction, or the background was a piece of fabric because that was what I had nearby. Physical product photography is surprisingly time-consuming. You clear a surface, move lights, find props, fight reflections, take twenty pictures, and then do it again when the print changes.
 
-I wanted to find out.
+I wanted the model to do the staging while preserving the object.
 
-I began the experiment on May 24, 2026. My goal was to build a local image-editing workflow on consumer hardware, then keep testing until the output was good enough for a demanding real-world task. One concrete target was Etsy product photography: take one ordinary source photo, preserve the exact product, and generate clean hero images and believable lifestyle scenes.
-
-That sounds simple until the product includes personalized text, recognizable artwork, printed texture, and exact geometry. A model can generate a beautiful bedroom in seconds and still fail the assignment because it quietly changed the name on the sign.
-
-This is the story of the hardware decision, the models I tried, the configurations that failed, the performance surprises, and the local workflow that eventually became worth using.
-
-![A personalized room sign placed naturally in a warm bedroom by a Nunchaku-compatible Qwen Image Edit workflow](assets/results/nunchaku-qwen-room-lifestyle.png)
-
-## Starting with a constraint, not a leaderboard
-
-I did not start by asking which image model had the best benchmark score. I started with a set of constraints:
-
-- I wanted to run on Windows because that was already my development environment.
-- I wanted enough VRAM to explore current image-editing models, not just older text-to-image checkpoints.
-- I wanted a CUDA path that worked with ComfyUI, PyTorch, and experimental custom nodes without turning every installation into its own research project.
-- I wanted to keep the hardware cost in enthusiast territory.
-- I cared about end-to-end latency, including model loading, text encoding, VAE work, and saving the result.
-- Most importantly, the output had to preserve a real source product.
-
-Those constraints made VRAM the first filter.
-
-Raw compute is important, but it is not very helpful if the model, vision-language encoder, VAE, and adapters cannot coexist in memory. When they do not fit, the runtime starts moving components between system RAM and VRAM. That can make a theoretically fast GPU spend a surprising amount of time waiting on the rest of the pipeline.
-
-## Why I chose the RTX 5060 Ti 16 GB
-
-I bought a refurbished **PNY Dual Fan OC GeForce RTX 5060 Ti 16 GB GDDR7** for **$530** from Newegg.
-
-I want to be transparent about that price. NVIDIA launched the 16 GB 5060 Ti at $429, so $530 refurbished was not a victory lap in bargain shopping. It was the card I could actually get when I was ready to do the work, and it matched the experiment unusually well.
-
-The 16 GB mattered more than moving one tier up to the 12 GB RTX 5070. The 5070 has more compute, but this workload repeatedly approached the VRAM ceiling. The 5070 Ti kept 16 GB and added speed, but it also raised the starting price and board power substantially. A used RTX 3090 remained the obvious wild card: 24 GB is extremely attractive for local AI, but it comes with high power draw, used-market uncertainty, and an older architecture.
-
-AMD and Intel deserved serious consideration too. The Radeon RX 9060 XT 16 GB had excellent VRAM-per-dollar on paper. Intel's Arc B580 made local experimentation accessible at an even lower price. The issue was not whether those cards could run AI. It was whether they offered the same low-friction path for the exact Windows, ComfyUI, CUDA-oriented, custom-node-heavy stack I wanted to test. At the time of the experiment, NVIDIA was the conservative engineering choice.
-
-Blackwell also gave me access to FP4-oriented paths supported by Nunchaku and compatible community quantizations. That became important later.
-
-My conclusion was not that the 5060 Ti is universally the best AI GPU. It was that the 16 GB version was the best balance for **this** experiment: enough memory to make modern editing viable, mature software support, moderate 180 W board power, and a price that did not require pretending this was a datacenter.
-
-## The test image was intentionally difficult
-
-I used a personalized children's room sign photographed on a granite counter.
-
-![Original personalized room sign photographed on a granite counter](assets/source/product-sign-source.jpg)
-
-The image is imperfect in exactly the ways a real seller's upload might be imperfect. The background is busy. The crop is tight. The product is not isolated. The sign contains small text, stylized characters, texture, specific colors, and rounded corners.
-
-For every output, I looked at four questions:
-
-1. **Identity:** Is this still the same product?
-2. **Text and artwork:** Did the name, characters, colors, or printed details change?
-3. **Physical integration:** Do perspective, scale, shadows, contact, and lighting make sense?
-4. **Listing appeal:** Would this image actually help someone understand or want the product?
-
-That last point kept the experiment honest. Pixel-perfect preservation on the original granite counter was not a successful lifestyle image. A gorgeous room containing a fictional version of the sign was not successful either.
-
-## The first important failure: compositing is not scene generation
-
-My earliest instinct was a traditional pipeline:
-
-1. segment the product;
-2. generate a suitable background;
-3. composite the cutout into the scene;
-4. add shadows and color matching.
-
-That approach is controllable and still useful, but the first results looked like what they were: a cutout placed on top of a background. The product did not truly belong to the lighting, perspective, or geometry of the new scene.
-
-This changed the direction of the project. Segmentation remained valuable for masks, validation, and deterministic layouts, but the strongest lifestyle results came from image-editing models that could reason about the source product and regenerate the surrounding pixels together.
-
-The hard part became controlling how much the model was allowed to invent.
-
-## Qwen proved the basic idea
-
-Qwen Image Edit 2511 was the first model family that made the whole project feel viable. It understood the source image, followed detailed editing instructions, and preserved personalized lettering far better than the creative-first routes.
-
-At full quality and 40 steps, it also took roughly six minutes per image on this machine.
-
-The result could be excellent, but six minutes was not an interactive workflow and would not support a practical customer experience. That pushed the investigation toward distilled adapters, fewer steps, smaller resolutions, and quantization.
-
-The Qwen Lightning configuration changed the equation. At two steps, a 768-class edit could complete in roughly 11-12 seconds after warm-up while retaining the identity of the product. Three steps improved polish at roughly 22-26 seconds. One step dropped into the 8-14 second range but produced smeary details and unreliable text, so it was rejected.
-
-![Qwen Image Edit clean studio hero](assets/results/qwen-lightning-768-clean-hero.png)
-
-The lesson was not simply "fewer steps are faster." The useful operating point was narrow. Two steps gave me a surprisingly strong default. One step crossed the quality boundary. Three steps was useful when the added polish justified the wait.
-
-## Why the GPU did not stay at 99%
-
-During the Qwen tests, GPU utilization often looked lower than I expected. A monitored run averaged about 47%, peaked at 99%, and reached roughly 15.3 GB of VRAM.
-
-The explanation was the whole graph, not just the diffusion transformer. The image model was around 19 GB in its native form, and the Qwen vision-language text encoder was another substantial component. Add the VAE, LoRA, intermediate tensors, and runtime overhead, and a 16 GB card cannot keep everything resident.
-
-ComfyUI's dynamic model management was making the workflow possible by loading and offloading pieces. It was also creating transfer and initialization gaps that pulled down average utilization.
-
-That produced several practical findings:
-
-- cold and warm measurements had to be reported separately;
-- repeated prompts could be faster than varied prompts because text conditioning could be reused;
-- shrinking only the diffusion model did not remove text-encoder cost;
-- forcing `--highvram` caused the Qwen workflow to hang on this 16 GB card;
-- the right optimization target was end-to-end latency, not a prettier utilization graph.
-
-This was one of my favorite parts of the experiment. The machine was not "underusing" the GPU in a simple sense. It was exposing the memory architecture of the workflow.
-
-## Quantization helped, but not always in the obvious way
-
-I tested Qwen GGUF Q2 and Q3 variants expecting the smaller model files to unlock a large speed improvement.
-
-They fit differently, but they did not beat the native Lightning route. Q2 warm runs landed around 14-15 seconds at 640x480. Q3 was closer to 18-19 seconds. Both were useful, but neither improved the quality/latency frontier enough to become the default.
-
-That result is a good reminder that quantization is not synonymous with speed. Kernel support, memory movement, text encoding, dequantization behavior, and node implementation all matter. A smaller checkpoint can solve a capacity problem without solving the actual bottleneck.
-
-## A Nunchaku-compatible Qwen route produced the best final result
-
-The Nunchaku ComfyUI runtime was the most involved path to get working, and it ultimately produced the strongest final-quality route. The exact Qwen 2511 "ultimate speed" and "balanced" checkpoints I tested came from QuantFunc, a community quantization project that explicitly states it is not an official Nunchaku release.
-
-On an RTX 50-series card, this model family uses FP4/NVFP4 rather than the INT4 files intended for earlier architectures. The "ultimate speed" Qwen Image Edit model at 0.8 MP completed warm, varied-prompt edits in roughly 25-27 seconds.
-
-That was slower than native Qwen Lightning, which surprised me at first. The name "ultimate speed" describes the quantized model variant, not a guarantee that the entire ComfyUI graph will beat every native low-step configuration. Qwen's text encoder, VAE, custom-node path, LoRA stack, model transitions, and output resolution still mattered.
-
-But the output was excellent.
-
-![Nunchaku Qwen lifestyle result](assets/results/nunchaku-qwen-room-lifestyle.png)
-
-The sign belongs in the room. The shadows and warm light agree with the scene. The product's text and artwork remain intact. It is the first result in the experiment that I would show without immediately explaining away a major flaw.
-
-The balanced community variant was slightly more polished but took about 67 seconds. That was a poor trade for this target. The ultimate-speed 0.8 MP route became the "Best" tier.
-
-## FLUX.2 Klein was the speed and aesthetics specialist
-
-FLUX.2 Klein 4B was exciting for a different reason. The distilled FP8 model could produce a 0.8 MP scene in about seven seconds, and its sense of composition was excellent.
-
-![FLUX.2 Klein lifestyle result with changed lettering](assets/results/flux2-klein-room-drift.png)
-
-At first glance, this may be the most attractive result in the set. Look closer and the sign says `LEX'S ROOM`. Several artwork details changed as well.
-
-For freeform generation or a product without identity-sensitive text, that trade could be completely reasonable. For personalized merchandise, it is disqualifying. FLUX.2 Klein became a conditional "Great" tier for aesthetics, not the default fidelity route.
-
-The NVFP4 variants were even faster:
-
-- about 4-5 seconds at 0.8 MP and four steps;
-- about 6-7 seconds at 1.2 MP and four steps.
-
-Those became the best preview configurations. They are fast enough to support interactive exploration, with the understanding that exact text and artwork require validation or a later Qwen pass.
-
-| 0.8 MP NVFP4 preview, about 4-5 seconds | 1.2 MP NVFP4 preview, about 6-7 seconds |
+| Ordinary source photo | Local edit on an RTX 5060 Ti 16 GB |
 |---|---|
-| ![FLUX.2 Klein NVFP4 0.8 MP room preview](assets/results/flux2-klein-nvfp4-speed-room.png) | ![FLUX.2 Klein NVFP4 1.2 MP room preview](assets/results/flux2-klein-nvfp4-speed-plus-room.png) |
+| ![A rocket-shaped 3D-printed organizer against a plain backdrop](assets/sources/rocket-organizer-source.png) | ![The organizer staged in a bright homework environment by FLUX.2 Klein](assets/results/flux2-klein-rocket-lifestyle.png) |
 
-Both of these seeds happened to preserve the personalized text. The earlier FP8 result did not. That variability is exactly why I describe the route as fast and impressive, but not contractual.
+That turned into a much broader investigation. I tested model families, quantizations, text encoders, custom runtimes, step counts, resolutions, denoise values, warm and cold behavior, and a lot of prompts. I also learned that the configuration producing the best single image is not necessarily the system I want to operate.
 
-## The slower challengers
+My practical conclusion is:
 
-I also tested newer and alternative image-editing families rather than assuming the first working stack was final.
+- FLUX.2 Klein 4B is the model I would use most often for fast, attractive scene creation when I do not need the new scene to contain exact text.
+- Native Qwen Image Edit 2511 is my personal favorite for product fidelity, existing artwork, and text-sensitive edits.
+- Nunchaku was an interesting engineering path, but I would not choose the tested setup over native Qwen or FLUX for this workload.
 
-**LongCat Image Edit Turbo** produced respectable product-preserving images. The official BF16 Diffusers route was wildly impractical on this machine: roughly 441 seconds to load and 1,112 seconds to generate. GGUF Q3/Q4/Q5 variants brought generation into the 41-43 second range. That made LongCat technically plausible but still slower than the accepted routes.
+The path to that answer was the useful part.
 
-![LongCat clean hero result](assets/results/longcat-clean-hero.png)
+## I wanted a local-AI card, not an image-only card
 
-**FireRed Image Edit 1.1** with a Q3_K_M model and an eight-step Lightning adapter generated one of the cleanest studio images in the experiment. It took about 74 seconds.
+I bought a refurbished **PNY Dual Fan OC GeForce RTX 5060 Ti 16 GB GDDR7** for **$530**.
 
-![FireRed clean hero result](assets/results/firered-clean-hero.png)
+Image editing was one reason for the purchase, but not the only one. I wanted a machine where I could experiment with local LLMs, multimodal models, coding assistants, speech, embeddings, retrieval, and whatever interesting open model appeared next. That changed how I thought about the GPU.
 
-That result was important because it separated "can this card run it?" from "should this be in the product path?" The answer was yes, then no.
+An 8 GB card was not enough. It can run plenty of models, but it would force me into aggressive quantization, small context windows, CPU offload, or older image stacks too early. Twelve gigabytes looked like the minimum I was willing to consider. The 16 GB 5060 Ti deal was the best bang for the buck I could find in the low-friction CUDA ecosystem.
 
-**Z-Image Turbo** fit within the broader 16 GB story, but the image-to-image setup I tested was not competitive for this task. At about 32 seconds, it stayed too close to the original granite setting and introduced obvious star-like artifacts.
+In hindsight, I am very glad I bought the 16 GB version. I am also much less likely to call 16 GB "a lot of VRAM" now.
 
-![Rejected Z-Image result with artifacts](assets/results/zimage-rejected-artifacts.png)
+## Parameter count is not the image-memory requirement
 
-I kept that output because failed images are part of the research. A repository containing only the winners would make the final routing decision look much easier than it was.
+A 4B image model sounds as though it should fit comfortably on a 16 GB card. Sometimes it does. The complete workflow may not.
 
-## The workflow I would build from these findings
+An image-editing graph can include:
 
-The final answer is not one model. It is a pipeline with explicit quality tiers.
+- the diffusion transformer;
+- a vision-language text encoder that reads both prompt and source image;
+- a VAE for encoding the input and decoding the output;
+- one or more LoRAs or distilled adapters;
+- reference latents;
+- attention buffers and intermediate tensors;
+- custom-node runtime overhead;
+- multiple model families loaded during a routing or comparison process.
 
-For fast iteration, use FLUX.2 Klein NVFP4 at 0.8 or 1.2 MP. It can return visual directions in roughly 4-7 seconds.
+Native Qwen peaked near 15.3 GB in one monitored run and still moved components between RAM and VRAM. GPU utilization averaged only around 47% during that observation, even though it peaked at 99%. The GPU was not lazy. The graph was alternating between text encoding, transfers, sampling, and decode work.
 
-When exact product identity or lettering matters, use native Qwen Image Edit 2511 with the Lightning adapter. Two steps at a 768-class resolution is the best general default I found, with an observed warm latency near 11-12 seconds.
+The same lesson applies to local LLMs. [Gemma 4 12B](https://huggingface.co/google/gemma-4-12B) is about 24 GB in BF16 before runtime overhead. Four-bit quantization makes a 12B-class model plausible on a 16 GB card, but the KV cache, multimodal inputs, and serving framework still matter. [Qwen3.6](https://huggingface.co/collections/Qwen/qwen36) begins at much larger total parameter counts, so its useful local configurations demand quantization and careful context planning.
 
-For the strongest final image, route to the QuantFunc Qwen Image Edit 2511 ultimate-speed FP4 checkpoint through Nunchaku at 0.8 MP. It takes roughly 25-27 seconds but produced the best complete result.
+VRAM capacity is not a spec-sheet footnote. It determines which experiments are pleasant, which merely run, and which quietly spend most of their time moving data.
 
-Then validate the output. At minimum, compare OCR text, product geometry, dominant colors, logo/artwork features, and embedding similarity against the source. Automated checks will not replace a human reviewer, but they can reject obvious drift before an image is shown or published.
+## What the alternatives cost in July 2026
 
-The pipeline should also understand the requested asset type. A clean hero, lifestyle scene, scale reference, detail crop, and gift context need different composition rules. Asking one prompt to create "a great listing image" gives the model too much freedom and makes quality difficult to measure.
+GPU pricing moves too quickly for a timeless table, so this is a dated snapshot. On **July 15, 2026**, I observed the following ordinary U.S. retail bands, excluding one-off local clearance deals and extreme marketplace listings:
 
-## What else local image models are good for
+| GPU | VRAM | Observed price band | My read for local AI |
+|---|---:|---:|---|
+| RTX 5060 Ti | 8 GB | $360-$395 | Cheap compute, but not enough memory for the range I wanted |
+| RTX 5060 Ti | 16 GB | $565-$570 | The strongest affordable CUDA capacity tier in this comparison |
+| RTX 5070 | 12 GB | $550-$670 | Faster compute paired with less memory |
+| RTX 5070 Ti | 16 GB | $900-$1,100 | Faster, same capacity, much more expensive |
+| RTX 5080 | 16 GB | $1,250-$1,600 | Considerably faster without solving the 16 GB ceiling |
+| Used RTX 3090 | 24 GB | $1,189-$1,292 fair asking | Great capacity, high power, used risk, and an unusually hot market |
+| RX 9060 XT | 16 GB | $400-$460 | Excellent hardware value if the exact software stack is validated |
+| RX 9070 XT | 16 GB | $690-$850 | Strong compute and capacity with more Windows/custom-node uncertainty here |
+| Intel Arc B580 | 12 GB | $300-$310 | Interesting entry point with less headroom and narrower workflow coverage |
 
-Product photography was a useful stress test, but it is only one reason I am excited about local image models.
+The 12 GB RTX 5070 was the clearest example of why gaming tiers do not map neatly to local AI. It is faster than the 5060 Ti, but it would make the main constraint worse. The 5070 Ti and 5080 offered more speed, but neither increased capacity. The used 3090 was the capacity wildcard, although its asking price, power draw, age, and used-condition risk made it less attractive than it first appeared.
 
-**Private photo editing** is the clearest example. Family photos, home interiors, IDs visible in the background, unreleased products, and client assets may not belong in a third-party cloud service. A local workflow can perform cleanup, relighting, background changes, restoration, or style exploration without uploading the source.
+AMD looked excellent on paper. The 16 GB RX 9060 XT in particular deserves attention for a Linux-first or deliberately validated stack. My experiment was Windows, ComfyUI Desktop, CUDA-oriented models, and custom nodes. NVIDIA was not the cheapest silicon. It was the path with the fewest unknowns.
 
-**Confidential design work** is another. Developers and product teams can explore packaging, interface concepts, hardware colors, booth layouts, and campaign directions before the work is public.
+## The first successful images were not the final architecture
 
-**Synthetic test data** can be generated locally for demos and computer-vision systems. The important caveat is that synthetic data needs its own evaluation; generating thousands of images is not the same as generating a representative dataset.
+My early runs proved that the idea worked and then exposed everything that could go wrong.
 
-**Game and application prototyping** benefits from cheap, rapid visual iteration. A local model can produce placeholders, textures, storyboards, card art, backgrounds, and mood studies while the team is still discovering the design.
+The first full-quality native Qwen graph took about six minutes per image. The output could be excellent, but that latency was unusable for an interactive product. Reducing resolution helped. Quantizing helped fit models. Neither automatically solved end-to-end latency.
 
-**Diagrams and presentations** are possible too, with one important boundary: let the image model create the visual concept, then render labels, arrows, and factual text with deterministic code. The FLUX result in this experiment is a perfect explanation of why.
+I tried Qwen GGUF Q2 and Q3 variants. They reduced capacity pressure but did not beat the native Lightning path. I tried FLUX Kontext, Z-Image Turbo, FireRed, LongCat, and multiple FLUX.2 Klein configurations. Some were too slow. Some did not preserve the source. Some stayed too close to the original. Some looked attractive until I noticed that a name, edge, or piece of artwork had changed.
 
-**Offline and educational tools** are especially interesting. Once the weights are available, a classroom, workshop, or traveling developer can experiment without metered API calls or a reliable connection.
+That last category was the most educational. A beautiful image is not a successful product edit if it depicts a different product.
 
-Local generation also makes large evaluation runs psychologically easier. I could try another seed, resolution, quantization, or sampler without wondering whether every imperfect experiment was increasing an API bill. The hardware cost is real, but the marginal cost of curiosity becomes very small.
+## Native Qwen became my quality favorite
 
-## What I learned
+Qwen Image Edit 2511 was the first family that made the whole project feel dependable. It understood the source image, followed detailed edits, and preserved personalized text and product artwork better than the creative-first alternatives.
 
-The RTX 5060 Ti 16 GB is not a miniature datacenter. It is also far more capable than I expected when I started.
+The full graph was too slow, but the Lightning adapter changed the tradeoff. The accepted two-step, 768-class configuration completed in roughly **11-12 seconds warm** in the controlled tests. Three steps moved into the 22-26 second range and added polish. One step could be faster, but the details became smeary and text reliability fell apart.
 
-It can run current image-editing models, preserve a difficult personalized product, and generate polished listing-quality scenes in under 30 seconds. It can return useful previews in under seven seconds. It can do that locally, on Windows, with open tooling.
+![Native Qwen preserving the rocket organizer in a new daylight environment](assets/results/qwen-rocket-lifestyle.png)
 
-The constraint is not just compute. It is the fit and movement of the entire graph. VRAM capacity, text encoders, quantization kernels, model warm-up, VAE work, custom-node maturity, and prompt variability all affect the latency a user experiences.
+Qwen is still not a photocopier. It can drift, and a production workflow must check it. But it was my favorite balance when the photographed identity mattered.
 
-The most durable finding is architectural: **route by intent**. Use a fast creative model for exploration. Use a fidelity-first model when the source is contractual. Use a stronger quantized final route when the image is worth the extra seconds. Validate before publishing.
+## FLUX.2 Klein was the practical winner
 
-Most of all, this project reminded me why I enjoy engineering experiments. I started with a photo on a kitchen counter and a vague question about consumer hardware. I ended with a measured model portfolio, a better understanding of GPU memory behavior, and an image that genuinely surprised me.
+I originally treated FLUX.2 Klein too much like a preview model because one text-heavy test exposed its weakness. That was the wrong conclusion.
 
-That is a pretty good return on a refurbished graphics card.
+FLUX.2 Klein 4B is exceptionally useful when the requested scene does not need newly rendered text. It is fast, compositionally strong, and surprisingly consistent at making an object belong in a plausible environment. The FP8 distilled route at 0.8 MP generally landed around seven to eight seconds warm. In a July follow-up, a varied-prompt lifestyle edit completed in **8.4 seconds**. A second controlled variant completed in **7.6 seconds**. NVFP4 preview routes reached approximately four to seven seconds.
 
-## Continue exploring
+![FLUX.2 Klein turning an ordinary product shot into a bright desk scene](assets/results/flux2-klein-rocket-lifestyle.png)
 
-The full repository includes:
+This is the route that makes local iteration feel different. At that latency, trying another camera angle, prop set, or lighting direction is not a batch job. It is a conversation with the image.
 
-- the [hardware comparison](docs/hardware-selection.md);
-- the [test methodology and scoring rubric](docs/methodology.md);
-- the complete [experiment log](docs/experiment-log.md);
-- the proposed [production workflow](docs/workflow-design.md);
-- [machine-readable benchmark observations](data/benchmark-results.csv);
-- reusable [ComfyUI API templates](workflows/);
-- primary [hardware, model, and runtime references](docs/references.md).
+FLUX still needs a preservation contract. It may simplify artwork, reinterpret small geometry, or invent lettering when asked. My practical rule is simple:
 
-All timings and images are from the test workstation described in the repository. Re-run them on your own hardware before making a purchase or production decision.
+- if the scene can be text-free and the visual direction matters most, start with FLUX.2 Klein;
+- if exact source text, artwork, or fine identity matters, start with native Qwen;
+- validate either one before publication.
+
+That is much more useful than labeling one model "best."
+
+## What happened with Nunchaku
+
+I spent a lot of time getting a Nunchaku-compatible Qwen path running. It was worth doing.
+
+The work clarified the difference between official and community quantizations, pre-Blackwell INT4 and Blackwell FP4/NVFP4 files, custom wheels tied to Python and PyTorch versions, and isolated model speed versus complete graph latency. The strongest tested result was excellent.
+
+The tested QuantFunc Qwen 2511 ultimate-speed FP4 route still took roughly **25-27 seconds warm** at 0.8 MP. That was slower than native Qwen Lightning. The model name described the quantization variant, not a guarantee that the complete ComfyUI workflow would beat a native low-step graph. The text encoder, VAE, LoRA stack, model transitions, custom nodes, and output resolution all remained in the bill.
+
+I came away not wanting to operate that route. It added setup and compatibility burden without winning the decision that mattered to me. It belongs in the experiment log, not at the top of the recommendation table.
+
+## Prompt engineering was half the project
+
+Changing models was only part of the progress. The prompts changed substantially too.
+
+Early prompts were broad: make this a great listing photo, use professional lighting, put it in a nice room. They gave the model too much freedom. The output might look good while quietly redesigning the product.
+
+The useful pattern became:
+
+### 1. Start with a preservation contract
+
+I named the traits that define the object:
+
+```text
+Preserve the cream body, red fins and top panel, black outlines, orange flame,
+circular black window, rectangular storage geometry, visible print texture,
+and the same pens and markers.
+```
+
+The order matters. I put identity before styling so the prompt did not begin by telling the model to be creative.
+
+### 2. Ask for one asset type
+
+A clean hero, a lifestyle scene, a detail crop, and a dimension graphic have different composition rules. Asking for all of them in one prompt produces muddled work.
+
+For a lifestyle image, I described the environment and why the object belonged there. For a clean hero, I removed props and asked for controlled light. For a scale or dimension image, I eventually stopped asking the generative model to render measurements at all.
+
+### 3. Describe physical integration
+
+The phrases that improved believability were practical photography instructions:
+
+- natural three-quarter camera angle;
+- soft daylight from the left;
+- realistic contact shadow;
+- coherent reflections;
+- shallow depth of field;
+- complete silhouette visible;
+- uncluttered background.
+
+These details helped solve the "cutout pasted on a background" look. The model needed to reason about how the new scene lit and supported the object.
+
+### 4. Close the escape hatches
+
+I ended with explicit exclusions:
+
+```text
+Do not add, remove, duplicate, resize, or redesign the organizer or its
+contents. No text, labels, badges, arrows, hands, or people.
+```
+
+This was especially important for FLUX. "No text" in this context means no newly invented scene text. If the source product has important lettering, the preservation contract must say that separately, and Qwen is usually the safer route.
+
+### 5. Keep prompts ranked, not bloated
+
+More adjectives did not guarantee more control. Long negative lists could compete with the actual request. The strongest prompts usually named five to eight immutable product traits, one scene, one camera/light plan, and a short exclusion list.
+
+### 6. Treat graph settings as part of the prompt system
+
+Steps, denoise, seed, resolution, negative conditioning, and reference-image scaling all affect instruction following. A prompt cannot be evaluated independently of the graph that interprets it.
+
+The dimension tests made the boundary obvious. Qwen could draw attractive arrows and labels, but it also generated incorrect measurements. A production system should let the image model create the visual and let deterministic code render factual dimensions, labels, prices, and compliance text.
+
+The complete prompt templates and failure notes are in [Prompt engineering](docs/prompt-engineering.md).
+
+## Local cost is not zero, but it changes behavior
+
+Cloud APIs remove setup work, scale immediately, and often offer higher absolute quality. They also meter every candidate.
+
+As of July 15, 2026:
+
+- FLUX.2 Klein 4B API image editing started around $0.014 per image;
+- Gemini 3.1 Flash Image was about $0.067 for a 1K image and $0.151 at 4K;
+- Gemini 3 Pro Image was about $0.134 for a 1K/2K image;
+- GPT Image 1 medium square images were $0.042 and high square images were $0.167, with portrait high images at $0.25.
+
+At a conservative 250 W whole-system estimate, an 8.4-second local image uses about 0.00058 kWh. The U.S. Energy Information Administration estimated 2026 summer residential electricity at 18.27 cents/kWh, putting that run near **$0.00011 in electricity**.
+
+The hardware still has to be paid for. Ignoring resale value and the fact that I use the GPU for other work, a $530 card breaks even after roughly:
+
+- 37,857 images compared with $0.014 calls;
+- 7,911 images compared with $0.067 calls;
+- 3,174 images compared with $0.167 calls.
+
+That math does not say everyone should buy a GPU. It says the local case improves rapidly when a workflow produces many candidates, runs evaluation matrices, processes batches, or supports more than one AI workload. It also changes the psychology of experimentation. A hundred seeds may be wasteful, but it does not arrive as a surprise API invoice.
+
+## Privacy is a feature, not a slogan
+
+Some images should not be uploaded casually: family photos, home interiors, client prototypes, unreleased products, IDs in the background, or proprietary design work.
+
+For one example, I used native Qwen to clean a home photo containing a television and distracting room context. The approved result is below. The source photo is intentionally not in this repository.
+
+![A private home planter photo cleaned locally into a calm shelf portrait](assets/results/qwen-private-photo-cleanup.png)
+
+That is the privacy advantage in concrete form. The model weights and source remained on the workstation. Only the result I chose to publish left it.
+
+Local does not mean automatically secure. A real application still needs authentication, storage boundaries, deletion policies, encrypted backups, logs that do not leak prompts or paths, and careful custom-node review. It does mean I can design the data boundary instead of accepting one by default.
+
+## Other things I would use this setup for
+
+Product photography was the stress test, not the only use case.
+
+### Private photo editing and restoration
+
+Remove background clutter, relight an interior, restore an old scan, try a crop, or explore a style without uploading personal images. The local advantage is strongest when the source is sensitive and the user wants many iterations.
+
+### Game assets and visual prototyping
+
+A real object can seed a prop, inventory icon, storyboard element, or art-direction reference. FLUX turned the rocket organizer into a clean isometric concept in one local edit:
+
+![An isometric game-prop concept derived from the rocket organizer](assets/results/flux2-klein-game-asset.png)
+
+This is not final production geometry. It is fast visual language for deciding what to build.
+
+### Synthetic data and evaluation fixtures
+
+Image-editing models can create controlled viewpoint, lighting, and background variants for computer-vision experiments. The identity must be checked, and synthetic data should not silently replace real evaluation data, but it can help bootstrap a test set.
+
+![A controlled neutral-background synthetic variant of the rocket organizer](assets/results/flux2-klein-synthetic-data.png)
+
+### Confidential design iteration
+
+Client packaging, industrial concepts, architectural ideas, unreleased interfaces, and internal campaign drafts can remain inside a local network. This is useful even when the final render eventually goes to a cloud service.
+
+### Diagrams and presentation visuals
+
+The model can generate a visual concept, texture, scene, or unlabeled illustration. Deterministic code should add arrows, measurements, legends, and factual text. The failed dimension experiments were a useful reminder that a beautiful label can still be wrong.
+
+### Offline and embedded creative tools
+
+A local worker can keep functioning without API availability, rate limits, or network access. It can also expose a stable internal API to desktop tools, automation, and batch pipelines.
+
+## The workflow I would build now
+
+I would not expose a model selector first. I would expose intent.
+
+1. Analyze the source into a structured preservation contract.
+2. Classify the requested asset as hero, lifestyle, detail, scale, gift context, cleanup, concept, or controlled variant.
+3. Route text-free visual work to FLUX.2 Klein by default.
+4. Route text-sensitive and identity-sensitive work to native Qwen Image Edit.
+5. Generate more than one candidate only when the quality policy needs it.
+6. Validate product geometry, source text, scene plausibility, contact, and obvious artifacts.
+7. Add dimensions and factual overlays with code.
+8. Record the model, quantization, workflow version, seed, resolution, prompt hash, and timing class.
+
+I would keep a cloud provider as an explicit fallback for unsupported requests, unavailable workers, or repeated local validation failures. The fallback should be a visible policy with cost and privacy controls, not an invisible retry.
+
+## What I would test next
+
+The largest weakness in this research is the small, evolving corpus. I explored aggressively and reviewed every candidate, but I did not run a fixed multi-product benchmark with blind scoring.
+
+The next serious phase would include at least ten owned products spanning text-heavy, reflective, translucent, soft, irregular, and highly textured objects. Each accepted route would run fixed seeds across hero, lifestyle, and detail prompts. Evaluation would combine OCR, perceptual similarity, segmentation overlap, artifact checks, and human preference scoring.
+
+I would also keep cold-start, warm-model, repeated-prompt, and varied-prompt latency separate. A cached prompt is interesting engineering data, but it is not representative of a service generating a different image brief on every request.
+
+## Final take
+
+The RTX 5060 Ti 16 GB is not a miniature datacenter. It is also much more capable than I expected.
+
+The most important lesson was not that one model won. It was that a useful local image system is a routing and evaluation problem:
+
+- FLUX.2 Klein makes attractive, text-free scene iteration genuinely fast;
+- native Qwen Image Edit is the quality route I trust most for identity-sensitive work;
+- quantization can solve memory without solving total latency;
+- 16 GB is enough to do serious work and small enough to teach you exactly what consumes memory;
+- prompt structure, camera language, and preservation contracts matter as much as model names;
+- cloud economics favor convenience, while local economics favor volume, privacy, and experimentation.
+
+Most of all, this was fun. There is something satisfying about watching a consumer card turn an ordinary photograph into a scene that would have taken real time and space to stage, then opening the graph and figuring out why it worked. Affordable local AI is no longer only a demo. It is a practical engineering medium, with enough constraints left to keep it interesting.

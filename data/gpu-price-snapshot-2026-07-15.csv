@@ -1,0 +1,10 @@
+gpu,vram_gb,condition,observed_price_low_usd,observed_price_high_usd,notes
+RTX 5060 Ti,8,new,360,395,Multi-retailer tracker ordinary pricing
+RTX 5060 Ti,16,new,565,570,Multi-retailer tracker ordinary pricing; test card was 530 refurbished
+RTX 5070,12,new,550,670,Founders Edition through common AIB pricing
+RTX 5070 Ti,16,new,900,1100,Common Best Buy AIB listings
+RTX 5080,16,new,1250,1600,Common Newegg AIB listings excluding luxury variants
+RTX 3090,24,used,1189,1292,Fair asking range from 301 listings updated July 14 2026; condition and seller history matter
+RX 9060 XT,16,new,400,460,Common Newegg listings
+RX 9070 XT,16,new,690,850,Common Newegg listings excluding premium outliers
+Intel Arc B580,12,new,300,310,Common Newegg listings

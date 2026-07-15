@@ -13,12 +13,12 @@ flowchart TD
     C --> D["Build preservation contract"]
     D --> E["Plan listing image set"]
     E --> F{"Route by intent"}
-    F -->|"4-7 s preview"| G["FLUX.2 Klein NVFP4"]
-    F -->|"11-12 s fidelity default"| H["Native Qwen + Lightning"]
-    F -->|"25-27 s best final"| I["Nunchaku Qwen FP4"]
+    F -->|"Text-free scene, 7-8 s"| G["FLUX.2 Klein FP8"]
+    F -->|"Fast preview, 4-7 s"| P["FLUX.2 Klein NVFP4"]
+    F -->|"Identity/text, 11-12 s"| H["Native Qwen + Lightning"]
     G --> J["Candidate images"]
+    P --> J
     H --> J
-    I --> J
     J --> K["Identity and artifact evaluation"]
     K -->|"Pass"| L["Optional upscale and deterministic overlays"]
     K -->|"Fail"| M["Revise prompt, seed, crop, or route"]
@@ -48,23 +48,23 @@ Suggested schema:
 
 ```json
 {
-  "category": "personalized room sign",
-  "materials": ["printed hardboard"],
-  "shape": "rounded rectangle",
-  "dominantColors": ["navy", "rust", "white", "yellow"],
-  "exactText": ["ALEX'S ROOM"],
+  "category": "3D-printed desk organizer",
+  "materials": ["layered polymer"],
+  "shape": "rocket silhouette around rectangular storage",
+  "dominantColors": ["cream", "red", "black", "orange"],
+  "exactText": [],
   "identityFeatures": [
-    "astronaut on left",
-    "yellow robot on right",
-    "striped planet at top",
-    "navy space background"
+    "circular black window",
+    "red side fins",
+    "orange flame",
+    "visible print-layer texture"
   ],
   "physicalConstraints": [
-    "do not add a frame",
-    "preserve rounded corners",
-    "do not change aspect ratio"
+    "preserve storage openings",
+    "preserve fin count and placement",
+    "preserve the same contents"
   ],
-  "riskFlags": ["text-sensitive", "artwork-sensitive"]
+  "riskFlags": ["geometry-sensitive", "small repeated contents"]
 }
 ```
 
@@ -86,13 +86,19 @@ Do not ask the model to generate factual badges, measurements, guarantees, or sh
 
 ## 4. Routing
 
+### Practical scene route
+
+Use FLUX.2 Klein FP8 as the default for hero and lifestyle scenes that do not require newly generated text. It offered the best practical combination of speed, composition, and consistency in the tested text-free product follow-up. Validate source artwork and geometry before promotion.
+
+Use FLUX.2 Klein NVFP4 at 0.8 or 1.2 MP when interactive latency matters more than final polish.
+
 ### Fidelity route
 
-Use Qwen Image Edit when exact text, logos, artwork, or geometry matter. Start with the native 2511 + Lightning two-step route. Escalate to the tested QuantFunc Qwen 2511 ultimate-speed FP4 checkpoint through Nunchaku for a stronger final, or validate an official Nunchaku equivalent.
+Use Qwen Image Edit when exact source text, logos, artwork, or geometry matter. The native 2511 + Lightning two-step route is the preferred quality route. Add a third step only when evaluation shows that the added latency improves the requested asset.
 
-### Creative preview route
+### Experimental runtime route
 
-Use FLUX.2 Klein NVFP4 for composition exploration. Treat every result as a visual proposal. Do not promote it automatically when the preservation contract contains exact text or branded artwork.
+Keep the tested Nunchaku-compatible Qwen graph as a reproducibility and research option, not a production escalation. Its strongest image was excellent, but the measured end-to-end latency and custom-runtime burden did not beat native Qwen.
 
 ### Deterministic composite route
 
@@ -146,6 +152,7 @@ The worker should advertise capabilities such as GPU model, free VRAM, loaded mo
 
 - Queue limits prevent one user from monopolizing the GPU.
 - Warm pools keep the current route resident when demand justifies it.
+- The scheduler groups compatible jobs to reduce expensive Qwen/FLUX model-family transitions without violating deadlines.
 - Model downloads are managed separately from request handling.
 - Every output records model, quantization, workflow version, seed, dimensions, and prompt hash.
 - Source and output retention policies are explicit.

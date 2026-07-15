@@ -1,99 +1,150 @@
 # Local image model use cases
 
-Local image generation is most compelling when privacy, iteration volume, offline use, or integration control matters. The same hardware can support much more than listing photography.
+Local image generation is most compelling when privacy, iteration volume, offline use, or integration control matters. Product photography is one demanding example, not the limit of the hardware.
 
-## Private photo editing
+## Private photo cleanup
 
-- remove distracting objects or backgrounds;
-- relight a room or portrait;
-- restore, colorize, or repair personal photographs;
-- create crops and variants without uploading family images;
-- prepare sensitive client assets inside a controlled environment.
+Family photos, home interiors, IDs visible in the background, client assets, and unreleased prototypes may not belong in a third-party service.
 
-Local processing reduces data exposure, but the application still needs authentication, storage controls, deletion policies, and logs that do not capture private prompts or paths.
+![A locally cleaned photograph of a 3D-printed planter and plant on a simple shelf](../assets/results/qwen-private-photo-cleanup.png)
 
-## Product and brand prototyping
+The source for this example included a television and personal room context. It was processed locally and is intentionally not published. Only the approved output is in the repository.
 
-- packaging and label concepts;
-- colorway and material exploration;
-- booth, display, and retail-shelf mockups;
-- lifestyle scenes for unreleased products;
-- campaign storyboards before a photo shoot.
+Possible tasks:
 
-Identity-sensitive work should use source-preserving routes and deterministic text overlays. Generated packaging should never be mistaken for an approved regulatory label.
+- remove clutter or accidental background content;
+- relight a dim room;
+- replace a distracting background;
+- repair a crop or extend the canvas;
+- restore a scan;
+- explore a style before committing to a destructive edit.
 
-## E-commerce catalog operations
+Local processing reduces data exposure. It does not replace authentication, encrypted storage, deletion policies, safe logs, or custom-node review.
 
-- clean hero backgrounds;
-- normalized framing across a catalog;
-- contextual/lifestyle variants;
-- seasonal scene exploration;
-- detail crops and visual quality checks;
-- background generation for deterministic composites.
+## Game assets and visual prototyping
 
-Measurements, claims, prices, badges, and shipping promises should come from structured product data, not the model.
+A reference photo can seed a game prop, inventory icon, storyboard element, or art-direction study.
 
-## Development and test data
+![A rocket organizer transformed into an isometric game-prop concept](../assets/results/flux2-klein-game-asset.png)
 
-- synthetic images for UI states and demos;
-- computer-vision edge cases;
-- generated visual fixtures for integration tests;
-- data augmentation for segmentation or detection;
-- adversarial cases for OCR and artifact evaluation.
+Useful workflows:
 
-Synthetic data needs coverage analysis. A large generated dataset can reproduce a model's blind spots at scale.
+- convert a physical prototype into a stylized concept;
+- explore shape and palette families;
+- create storyboard frames from rough references;
+- generate placeholder props before final modeling;
+- communicate a visual direction to artists and developers.
 
-## Games and interactive media
+Generated concepts are not production geometry. They are fast decision artifacts.
 
-- concept art and storyboards;
-- temporary UI illustrations and card art;
-- textures, backgrounds, and environment studies;
-- character or prop variation during pre-production;
-- personalized local experiences without per-request API cost.
+## Synthetic data and evaluation fixtures
 
-Final production assets still need license review, art direction, consistency controls, and accessibility checks.
+Image-editing models can create controlled viewpoint, background, weather, and lighting variants for computer-vision development.
 
-## Diagrams and presentations
+![A neutral-background inspection variant of a rocket-shaped organizer](../assets/results/flux2-klein-synthetic-data.png)
 
-Image models are useful for visual metaphors, backgrounds, scene concepts, and illustrative components. They are unreliable sources for exact labels, topology, numbers, and factual relationships.
+Potential uses:
 
-A safer diagram pipeline is:
+- bootstrap object-detection examples;
+- create difficult lighting and partial-occlusion cases;
+- test background sensitivity;
+- generate UI fixtures for upload and moderation flows;
+- build visual-regression sets without exposing real customer images.
 
-1. generate the visual concept locally;
-2. create the actual graph from structured data;
-3. render labels, arrows, legends, and values with deterministic code;
-4. validate accessibility and contrast.
+Synthetic data can reproduce model bias and introduce identity drift. It should be labeled, reviewed, and kept separate from real holdout evaluation data.
 
-## Architecture and interior exploration
+## Confidential design iteration
 
-- mood studies and finish combinations;
-- furniture/layout visualization;
-- landscaping ideas;
-- renovation communication;
-- scene relighting.
+Local models can support work that is valuable before it is public:
 
-These are visualizations, not engineering drawings. Do not infer dimensions, structural safety, code compliance, or material performance from generated images.
+- client packaging and campaign mockups;
+- industrial design and 3D-print concepts;
+- interior and architectural studies;
+- unreleased product colorways;
+- private brand exploration;
+- internal presentation art.
 
-## Education and offline tools
+The local worker can remain inside a trusted network. A cloud provider can still be an explicit, approved fallback for requests the local stack cannot satisfy.
 
-- classroom creative labs without metered calls;
-- workshops where internet access is unreliable;
-- visual prompt experiments with transparent settings;
-- teaching diffusion, quantization, and GPU memory behavior;
-- installations and exhibits that must operate offline.
+## Product and catalog photography
 
-## Assistive and accessibility workflows
+The original stress test remains broadly useful:
 
-- simplify visual backgrounds;
-- create high-contrast explanatory variants;
-- generate tactile-graphic source concepts;
-- prepare visual schedules or communication aids;
-- pair local vision models with private alt-text drafting.
+- turn an ordinary phone photo into a clean hero;
+- replace a granite counter or fabric sweep with a plausible scene;
+- create lifestyle, detail, scale, and gift-context candidates;
+- test several art directions before staging a physical shoot;
+- reduce repeated lighting and product-placement work.
 
-The generated output should be reviewed by the person who relies on it. Accessibility is not a style transfer.
+The model must not silently redesign what a buyer will receive. Source identity is a business rule, not a visual preference.
 
-## Why local changes experimentation
+## Restoration and archival work
 
-Once hardware and model weights are available, another seed or prompt has almost no marginal API cost. That makes broad evaluation, batch processing, and playful exploration much easier.
+Local processing is useful for sensitive family, institutional, or client archives:
 
-The trade is operational ownership. Local users inherit model downloads, dependency compatibility, security updates, power use, heat, queueing, backups, and hardware failures. Local is not automatically cheaper; it is a different cost and control model.
+- dust and scratch cleanup;
+- gentle color restoration;
+- denoise and relighting;
+- crop repair;
+- alternate restoration candidates for human review.
+
+Preserve the original file, record every transformation, and do not present a generated reconstruction as historical fact.
+
+## Diagrams and presentation visuals
+
+An image model can create:
+
+- an unlabeled architecture illustration;
+- background scenes and textures;
+- conceptual cutaways;
+- visual metaphors;
+- icons or art-direction references.
+
+It should not be the authority for factual labels, dimensions, values, or citations. Generate the visual layer locally, then render text, arrows, legends, and measurements with deterministic code.
+
+## Offline creative tools
+
+A local model can power:
+
+- a desktop batch editor;
+- an internal asset workstation;
+- an offline field tool;
+- a private photo kiosk;
+- a creative coding environment;
+- an automation pipeline without external rate limits.
+
+The application should call a versioned worker API rather than depending directly on raw ComfyUI node IDs. The worker can advertise models, free VRAM, maximum resolution, and supported intents.
+
+## High-volume evaluation and learning
+
+Once the hardware and weights are available, another prompt or seed has almost no marginal API cost. This is useful for:
+
+- prompt-ablation studies;
+- quantization comparisons;
+- seed sensitivity tests;
+- evaluation-set generation;
+- workflow regression tests;
+- model-upgrade acceptance tests;
+- teaching and experimentation.
+
+Local generation does not make brute force automatically wise. It makes broad evaluation economically possible.
+
+## Choosing local, cloud, or hybrid
+
+Use local first when:
+
+- source privacy matters;
+- the workload is steady or iterative;
+- the model and graph fit the available hardware;
+- offline operation is valuable;
+- workflow control and provenance matter.
+
+Use cloud first when:
+
+- volume is low or highly bursty;
+- the best proprietary quality is required;
+- there is no appetite for runtime maintenance;
+- the local graph repeatedly fails validation;
+- a large model or resolution exceeds local capacity.
+
+Use a hybrid policy when privacy, cost, and quality differ by request. Make the routing decision visible and auditable.

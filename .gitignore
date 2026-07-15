@@ -8,6 +8,7 @@ venv/
 downloads/
 models/
 output/
+.research-output/
 temp/
 *.safetensors
 *.gguf
