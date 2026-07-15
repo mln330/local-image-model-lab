@@ -11,7 +11,7 @@
   "sources": {
     "rocket-organizer-public": {
       "published_path": "assets/sources/rocket-organizer-source.png",
-      "published_sha256": "0fa40b13155704720d260418de407d68b6f01def9f97670ab90a69f04a10f746"
+      "published_sha256": "5a2d3b36a3ed8790fb4a3075c88c52a699cce6c550f80d395cc402b6962c9a1e"
     },
     "rainbow-organizer-private": {
       "published": false,
