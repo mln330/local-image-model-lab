@@ -1,5 +1,7 @@
 # Local Image Model Lab
 
+[![Validate research repository](https://github.com/mln330/local-image-model-lab/actions/workflows/validate.yml/badge.svg)](https://github.com/mln330/local-image-model-lab/actions/workflows/validate.yml)
+
 ## What can a $530 consumer GPU actually do?
 
 I built this lab to answer a practical question: **how far can I push modern open image models on affordable hardware that fits under a desk?**
