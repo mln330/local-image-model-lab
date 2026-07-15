@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.idea/
+.vscode/
+downloads/
+models/
+output/
+temp/
+*.safetensors
+*.gguf
+*.ckpt
+*.pt
+*.pth
+*.bin

@@ -1,0 +1,21 @@
+family,configuration,precision,resolution_or_mp,steps,cold_seconds,warm_seconds_low,warm_seconds_high,identity_score_10,listing_appeal_score_10,decision,notes
+Qwen Image Edit 2511,full-quality baseline,mixed FP8,approximately 1 MP,40,,approximately 360,approximately 360,9.5,9.0,reject latency,Excellent output but about six minutes per image
+Qwen Image Edit 2511 + Lightning,768-class two-step,mixed FP8 + BF16 LoRA,768-class,2,,11,12,9.0,8.8,Great A,Best general speed-to-fidelity balance
+Qwen Image Edit 2511 + Lightning,768-class three-step,mixed FP8 + BF16 LoRA,768-class,3,,22,26,9.2,9.0,optional final,Better polish with higher latency
+Qwen Image Edit 2511 + Lightning,one-step,mixed FP8 + BF16 LoRA,768-class,1,,8,14,5.5,5.5,reject quality,Smeary details and unreliable lettering
+Qwen Image Edit 2511 + Lightning,640 varied prompts,mixed FP8 + BF16 LoRA,640x480,2,,approximately 12,approximately 12,8.7,8.3,Base,Repeated prompt could be about seven seconds but was not representative
+FLUX Kontext,edit baseline,FP8,768-class,8-12,,21,32,8.3,8.3,not selected,No consistent advantage over faster Qwen route
+Qwen Image Edit GGUF,Q2_K two-step,Q2_K,640x480,2,30,14,15,8.0,7.8,not selected,Fit improved but native Lightning remained faster
+Qwen Image Edit GGUF,Q3_K_M two-step,Q3_K_M,640-class,2,28,18,19,8.5,8.1,not selected,Slight quality gain over Q2 with added latency
+Qwen Image Edit 2511 / Nunchaku-compatible,QuantFunc ultimate-speed 0.5 MP,FP4,0.5 MP,4,,23,24,9.2,8.8,accepted,Strong product preservation
+Qwen Image Edit 2511 / Nunchaku-compatible,QuantFunc ultimate-speed 0.8 MP,FP4,0.8 MP,4,,25,27,9.6,9.5,Best,Strongest complete final-quality result
+Qwen Image Edit 2511 / Nunchaku-compatible,QuantFunc balanced 0.8 MP,FP4,0.8 MP,4,,approximately 67,approximately 67,9.7,9.7,reject latency,Small quality gain did not justify latency
+FLUX.2 Klein 4B,distilled varied prompt,FP8,0.8 MP,6,,approximately 7,approximately 7,6.0,9.0,Great B,Excellent composition but changed personalized text and art
+FLUX.2 Klein 4B,fast preview,NVFP4,0.8 MP,4,,4,5,5.8,7.8,Speed,Fastest accepted preview with identity risk
+FLUX.2 Klein 4B,larger fast preview,NVFP4,1.2 MP,4,,6,7,6.2,8.0,Speed+,Useful larger preview with identity risk
+FLUX.2 Klein 4B,large preview,NVFP4,approximately 2 MP,6,,approximately 17,approximately 17,6.3,8.1,not default,Too slow for a route still requiring fidelity validation
+FLUX.2 Klein 4B base,12-24 step edit,FP8,0.8 MP,12-24,,12,23,3.5,8.0,reject fidelity,Repeatedly rewrote product art and text
+LongCat Image Edit Turbo,official Diffusers,BF16,approximately 0.8 MP,8,441 load,1112,1112,9.0,8.5,reject latency,Generation time excludes the separate 441 second load
+LongCat Image Edit Turbo,GGUF guidance 1.0,Q3/Q4/Q5 K_M,0.8 MP,8,,41,43,8.8,8.2,research only,Guidance 4.5 produced blurry output
+FireRed Image Edit 1.1,Q3_K_M + eight-step Lightning,Q3_K_M,approximately 1 MP,8,,approximately 74,approximately 74,9.6,9.3,reject latency,Excellent studio result outside target latency
+Z-Image Turbo,image-to-image denoise 0.55,Q3_K_M,1024x768,8,,approximately 32,approximately 32,5.0,4.0,reject,Retained source setting and introduced artifacts

@@ -1,0 +1,7 @@
+tier,configuration,warm_time,role,sample
+Best,QuantFunc Nunchaku-compatible Qwen 2511 ultimate-speed FP4 at 0.8 MP,25-27 seconds,Text-sensitive final,assets/results/nunchaku-qwen-room-lifestyle.png
+Great A,Native Qwen Image Edit 2511 mixed FP8 + Lightning at 768-class and two steps,11-12 seconds,General fidelity default,assets/results/qwen-lightning-768-clean-hero.png
+Great B,FLUX.2 Klein 4B distilled FP8 at 0.8 MP and six steps,about 7 seconds,Aesthetic-first edit with validation,assets/results/flux2-klein-room-drift.png
+Base,Native Qwen Image Edit 2511 mixed FP8 + Lightning at 640-class and two steps,about 12 seconds with varied prompts,Lower-resolution fidelity preview,assets/results/qwen-lightning-clean-hero.png
+Speed+,FLUX.2 Klein 4B NVFP4 at 1.2 MP and four steps,6-7 seconds,Larger creative preview,assets/results/flux2-klein-nvfp4-speed-plus-room.png
+Speed,FLUX.2 Klein 4B NVFP4 at 0.8 MP and four steps,4-5 seconds,Fastest accepted preview,assets/results/flux2-klein-nvfp4-speed-room.png
