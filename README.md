@@ -4,15 +4,14 @@ How far can a $530 refurbished consumer GPU go with current open image-editing m
 
 This repository documents a hands-on experiment with an **RTX 5060 Ti 16 GB**, ComfyUI, native Qwen Image Edit, FLUX.2 Klein, several quantizations, and a lot of prompt iteration. The practical test was intentionally demanding: take an ordinary photo of a 3D-printed product, even when the lighting and background are not ideal, and turn it into polished Etsy-ready photography without rebuilding a tabletop studio for every shot.
 
-| Ordinary source photo | Local FLUX.2 Klein edit, 7.1 s warm |
+| Ordinary source photo | Verified local FLUX.2 Klein edit |
 |---|---|
-| ![A 3D-printed rocket organizer photographed against a plain fabric background](assets/sources/rocket-organizer-source.png) | ![The same rocket organizer staged naturally in a bright children's art space](assets/results/flux2-klein-rocket-listing-clean.png) |
+| ![A personalized space sign photographed on a granite counter](assets/sources/alex-room-sign-source.jpg) | ![The same sign staged on a desk with a ruler and coffee cup](assets/results/flux2-klein-sign-scale-context.png) |
 
 The short answer is **yes**, with qualifications. The 16 GB RTX 5060 Ti is capable of attractive, useful image edits. The best system was not one model for every request:
 
 - **FLUX.2 Klein 4B is my practical default for fast scene generation when the new scene does not need generated text.** It was dramatically faster than the other serious contenders and produced consistently attractive composition. A warmed FP8 run completed in 8.4 seconds in the July follow-up, and the accepted NVFP4 routes reached roughly 4-7 seconds.
 - **Native Qwen Image Edit 2511 is my personal quality favorite.** It was the most dependable option when source identity, product artwork, or existing text mattered. The best prior warm configuration was roughly 11-12 seconds at two steps.
-- **Nunchaku was useful research, not the setup I would choose.** Its strongest single result was excellent, but the tested route took roughly 25-27 seconds, required more custom-runtime work, and did not beat native Qwen on the complete speed/quality/operability tradeoff.
 
 That distinction is the central finding of the project. A benchmark winner is not automatically the best system.
 
@@ -36,15 +35,7 @@ Cloud image APIs are excellent, but per-image pricing changes how freely I exper
 
 Local inference changes the marginal cost. Using a conservative 250 W whole-system estimate, an 8.4-second image consumes about 0.00058 kWh. At the U.S. Energy Information Administration's 2026 summer estimate of 18.27 cents/kWh, that is about **$0.00011 of electricity per image**. Hardware, time, maintenance, and storage are still real costs, but another seed no longer feels like another purchase.
 
-At a $530 hardware cost, simple break-even points are:
-
-| Avoided cloud cost | Images to recover $530 | Electricity at 8.4 s/image |
-|---:|---:|---:|
-| $0.014/image | 37,857 | about $4.00 total |
-| $0.067/image | 7,911 | about $0.84 total |
-| $0.167/image | 3,174 | about $0.34 total |
-
-Those are intentionally simplified. A low-volume user should probably rent the cloud. The local case becomes compelling for repeated experimentation, batch generation, private source material, offline work, and a machine that also runs local LLMs, coding models, transcription, embeddings, and other AI experiments. See [Cost and privacy](docs/cost-and-privacy.md) for assumptions and caveats.
+A realistic application test matrix can require thousands of outputs before launch. Four model routes across 20 products, six asset types, five prompt variants, and three seeds is 7,200 generations. That would cost about $302 at $0.042 per image or $482 at $0.067, before higher-resolution validation and rejected experiments. Local generation makes that level of performance testing, prompt work, and regression testing practical across several projects. See [Cost and privacy](docs/cost-and-privacy.md) for assumptions and caveats.
 
 ## Why a 5060 Ti 16 GB?
 
@@ -80,7 +71,6 @@ More detail and source links are in [Hardware selection](docs/hardware-selection
 | Quality favorite | Native Qwen Image Edit 2511 mixed FP8 + Lightning, 768-class, 2 steps | about 11-12 s | Best general preservation of product identity, artwork, and existing text |
 | Fast preview | FLUX.2 Klein 4B NVFP4, 0.8 MP, 4 steps | about 4-5 s | Interactive visual direction at the lowest accepted latency |
 | Larger fast preview | FLUX.2 Klein 4B NVFP4, 1.2 MP, 4 steps | about 6-7 s | More pixels without losing interactive speed |
-| Tested, not selected | QuantFunc Qwen 2511 FP4 through Nunchaku, 0.8 MP | about 25-27 s | Excellent single outputs, but slower and operationally heavier than native Qwen |
 
 ### FLUX.2 Klein: the practical winner
 
@@ -97,13 +87,7 @@ This is the configuration I would reach for most often. FLUX is fast enough to m
 
 ![A native Qwen Image Edit result preserving the rocket organizer in a soft daylight scene](assets/results/qwen-rocket-lifestyle.png)
 
-Native Qwen produced the most faithful product edits across the experiments. It was the route I trusted when small geometry changes, personalized lettering, or existing artwork could make an otherwise beautiful image unusable. The two-step Lightning configuration was also faster than the Nunchaku route in the controlled warm tests.
-
-### Why Nunchaku is not the recommendation
-
-Nunchaku deserves documentation because getting Qwen FP4 running on Blackwell taught me a lot about model provenance, custom wheels, architecture-specific formats, and end-to-end bottlenecks. It also produced one of the strongest individual sign images.
-
-It did not become my preferred system. The tested community checkpoint took roughly 25-27 seconds, required a more fragile custom runtime, and still paid for Qwen's large text encoder, VAE, graph transitions, and output work. A lower-bit diffusion model does not automatically produce a faster application. The full record is in [Experiment log](docs/experiment-log.md).
+Native Qwen produced the most faithful product edits across the experiments. It was the route I trusted when small geometry changes, personalized lettering, or existing artwork could make an otherwise beautiful image unusable.
 
 ## Prompt engineering mattered
 
@@ -151,7 +135,7 @@ Other useful directions include confidential client mockups, restoration, interi
 - [Experiment log](docs/experiment-log.md) - every major model path and why it was accepted or rejected.
 - [Prompt engineering](docs/prompt-engineering.md) - the prompt system, templates, and failure analysis.
 - [Hardware selection](docs/hardware-selection.md) - current prices, VRAM reasoning, and broader local-AI use.
-- [Cost and privacy](docs/cost-and-privacy.md) - cloud comparison, break-even math, and privacy boundaries.
+- [Cost and privacy](docs/cost-and-privacy.md) - cloud testing costs, local iteration, and privacy boundaries.
 - [Workflow design](docs/workflow-design.md) - how to turn the experiments into a service pipeline.
 - [Methodology](docs/methodology.md) - timing and evaluation rules.
 - [Reproducibility](docs/reproducibility.md) - environment capture and workflow runner.

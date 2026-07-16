@@ -45,7 +45,6 @@ The workflow templates use placeholders instead of hard-coded local filenames. D
 |---|---|---|
 | `qwen-image-edit-lightning-api.json` | Qwen edit model, Qwen VL encoder, VAE, Lightning LoRA | Native fidelity-first route |
 | `flux2-klein-4b-edit-api.json` | FLUX.2 Klein model, Qwen 3 text encoder, FLUX.2 VAE | Practical text-free scene route and fast preview |
-| `nunchaku-qwen-image-edit-api.json` | ComfyUI-nunchaku and compatible Nunchaku wheel/model | Reproduce the tested experimental route; not the selected default |
 
 These are ComfyUI **API-format** graphs with `{{PLACEHOLDERS}}`; they are not UI-format workflow exports.
 
@@ -87,7 +86,6 @@ Do not average a model-family transition into warm latency. Report cold process 
 
 ## Known compatibility risks
 
-- Nunchaku wheels are tied to Python, PyTorch, CUDA, and GPU architecture combinations.
 - An official ComfyUI update can change node inputs or model loading behavior.
 - GGUF custom nodes and community quantizations may lag new model revisions.
 - Blackwell FP4 files are not interchangeable with INT4 files intended for earlier GPUs.

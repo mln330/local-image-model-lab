@@ -100,10 +100,6 @@ Use Qwen when source identity, artwork, or text matters most.
 - Keep negative conditioning focused; a long negative prompt adds work and can muddy priorities.
 - Two Lightning steps were the best warm speed/fidelity point in the tested configuration; three steps are an optional polish route.
 
-### Nunchaku-compatible Qwen
-
-Prompt structure was not the reason this route was rejected. It produced excellent images, but the tested end-to-end path was slower and operationally heavier than native Qwen. Treat runtime selection separately from prompt quality.
-
 ## Prompt templates
 
 ### Clean hero

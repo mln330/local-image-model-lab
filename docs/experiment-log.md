@@ -30,7 +30,7 @@ The first pipeline isolated the product, generated a separate background, and co
 
 **Decision:** accepted as the quality favorite and general fidelity-first default.
 
-In the final system assessment this became the **quality favorite**. It was faster than the tested Nunchaku route and required a more conventional native graph.
+In the final system assessment this became the **quality favorite** and the preferred fidelity-first graph.
 
 ### Lightning, three steps
 
@@ -87,36 +87,7 @@ In the final system assessment this became the **quality favorite**. It was fast
 
 **Decision:** both fit and work, but neither beats native Qwen Lightning on the tested machine. Quantization solved capacity more than latency.
 
-## 5. QuantFunc Qwen 2511 through Nunchaku
-
-The `ultimate_speed` and `balance` FP4 checkpoints in this section are community quantizations published by QuantFunc and executed through the Nunchaku runtime. They are not official Nunchaku releases.
-
-### Ultimate-speed FP4, 0.5 MP
-
-- approximately 23-24 seconds warm with varied prompts;
-- strong text and identity preservation.
-
-### Ultimate-speed FP4, 0.8 MP
-
-- approximately 25-27 seconds warm with varied prompts;
-- best complete balance of identity, scene integration, and listing appeal.
-
-**Decision:** excellent individual result, but not selected for the operating stack. The route was slower than native Qwen Lightning and added custom-runtime and checkpoint-provenance overhead.
-
-### Balanced FP4, 0.8 MP
-
-- approximately 67 seconds warm;
-- only a modest visible quality improvement.
-
-**Decision:** rejected for interactive/customer use.
-
-### Why Nunchaku was not faster than native Lightning
-
-The FP4 diffusion model is only one part of the graph. The Qwen vision-language text encoder, VAE, LoRA stack, model transitions, custom-node implementation, and larger output target still contribute. "Ultimate speed" is a model variant, not an end-to-end service-level guarantee.
-
-The important correction is that image quality, latency, and operability must be evaluated separately. Nunchaku won one inspected output comparison. It did not win the system decision.
-
-## 6. FLUX.2 Klein 4B
+## 5. FLUX.2 Klein 4B
 
 ### Distilled FP8, 0.8 MP, six steps
 
@@ -169,7 +140,7 @@ The original FLUX interpretation leaned too heavily on one personalized sign. A 
 
 The follow-up also reran the native Qwen template after a ComfyUI Desktop and PyTorch update. Two diagnostic runs took approximately 156-166 seconds because the graph repeatedly loaded or offloaded major components. Those values are preserved in `data/followup-runs-2026-07-15.json` but are not substituted for the earlier controlled 11-12 second warm benchmark. They are evidence that runtime version and model-residency behavior must be pinned and regression-tested.
 
-## 7. LongCat Image Edit Turbo
+## 6. LongCat Image Edit Turbo
 
 ### Official BF16 Diffusers
 
@@ -187,7 +158,7 @@ The follow-up also reran the native Qwen template after a ComfyUI Desktop and Py
 
 **Decision:** research-capable but outside the 30-second target.
 
-## 8. FireRed Image Edit 1.1
+## 7. FireRed Image Edit 1.1
 
 - Q3_K_M plus eight-step Lightning adapter;
 - approximately 74 seconds;
@@ -195,7 +166,7 @@ The follow-up also reran the native Qwen template after a ComfyUI Desktop and Py
 
 **Decision:** rejected on latency. Kept as evidence that quality alone is not the routing criterion.
 
-## 9. Z-Image Turbo
+## 8. Z-Image Turbo
 
 - Q3_K_M image-to-image;
 - eight steps, denoise 0.55;
@@ -213,6 +184,5 @@ The follow-up also reran the native Qwen template after a ComfyUI Desktop and Py
 | Fast preview | FLUX.2 Klein NVFP4, 0.8 MP, four steps | Lowest-latency visual direction |
 | Larger fast preview | FLUX.2 Klein NVFP4, 1.2 MP, four steps | Interactive candidate with more pixels |
 | Lower-resolution fidelity route | Native Qwen 2511 + Lightning, 640-class, two steps | Fidelity-first preview when native detail can be lower |
-| Tested, not selected | QuantFunc Qwen 2511 FP4 through Nunchaku, 0.8 MP | Strong output, but slower and operationally heavier |
 
 These are workload roles on one workstation, not global rankings. The default route is chosen by scene text and identity risk, not by a universal tier label.

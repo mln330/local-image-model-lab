@@ -44,29 +44,6 @@ Core placeholders:
 
 Use this as the practical default for fast scene generation when no new exact scene text is required. NVFP4 filenames and nodes depend on the distribution you install; do not assume an FP8 graph and an NVFP4 custom-node graph are interchangeable.
 
-### `nunchaku-qwen-image-edit-api.json`
-
-Core placeholders:
-
-| Placeholder | Example from the tested research run |
-|---|---|
-| `DIFFUSION_MODEL` | `nunchaku_qwen_image_edit_2511_ultimate_speed_fp4.safetensors` |
-| `TEXT_ENCODER` | `qwen_2.5_vl_7b_fp8_scaled.safetensors` |
-| `VAE_MODEL` | `qwen_image_vae.safetensors` |
-| `LORA_NAME` | `Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors` |
-| `MEGAPIXELS` | `0.8` |
-| `STEPS` | `4` |
-| `CFG` | `1.0` |
-| `DENOISE` | `1.0` |
-| `CPU_OFFLOAD` | `auto` |
-| `NUM_BLOCKS_ON_GPU` | `60` |
-| `USE_PIN_MEMORY` | `disable` |
-| `LORA_CPU_OFFLOAD` | `auto` |
-
-The exact `ultimate_speed` checkpoint used in the experiment was published by QuantFunc and is a community Nunchaku-compatible quantization, not an official Nunchaku release. Review both the [model card](https://huggingface.co/QuantFunc/Nunchaku-Qwen-Image-EDIT-2511) and runtime compatibility before use.
-
-This route is included for reproducibility. It produced an excellent individual output but was slower and operationally heavier than native Qwen Lightning, so it is not the selected production default.
-
 ## Shared editing placeholders
 
 The image-edit templates also require:

@@ -21,7 +21,6 @@ class ResearchDataTests(unittest.TestCase):
         by_decision = {row["decision"]: row for row in rows}
         self.assertIn("FLUX.2 Klein", by_decision["Practical default"]["configuration"])
         self.assertIn("Native Qwen", by_decision["Quality favorite"]["configuration"])
-        self.assertIn("Nunchaku", by_decision["Tested not selected"]["configuration"])
 
     def test_every_recommended_sample_exists(self) -> None:
         with (ROOT / "data" / "quality-tiers.csv").open(
@@ -133,6 +132,9 @@ class ResearchDataTests(unittest.TestCase):
         )
         article = (ROOT / "ARTICLE.md").read_text(encoding="utf-8")
         article_assets = set(re.findall(r"\]\((assets/[^)]+)\)", article))
+        article_assets.update(
+            re.findall(r'<img[^>]+src="(assets/[^"]+)"', article)
+        )
         documented_assets = {
             source["published_path"] for source in manifest["sources"].values()
         }

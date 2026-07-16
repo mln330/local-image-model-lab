@@ -96,10 +96,6 @@ Use FLUX.2 Klein NVFP4 at 0.8 or 1.2 MP when interactive latency matters more th
 
 Use Qwen Image Edit when exact source text, logos, artwork, or geometry matter. The native 2511 + Lightning two-step route is the preferred quality route. Add a third step only when evaluation shows that the added latency improves the requested asset.
 
-### Experimental runtime route
-
-Keep the tested Nunchaku-compatible Qwen graph as a reproducibility and research option, not a production escalation. Its strongest image was excellent, but the measured end-to-end latency and custom-runtime burden did not beat native Qwen.
-
 ### Deterministic composite route
 
 Use segmentation and compositing when every source pixel must be preserved, especially for white-background catalog images, collages, or layouts with exact callouts. Generate the scene plate separately and calculate perspective, contact shadow, and color matching deterministically.

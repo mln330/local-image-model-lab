@@ -9,7 +9,11 @@ date: "2026-07-15"
 
 I started this experiment in late May 2026 with a question that sounded simple: could I take an ordinary phone photo of a 3D-printed product and turn it into a genuinely attractive Etsy listing photograph without sending it to a cloud image service?
 
-The source photo did not need to be terrible. It just needed to be normal. Maybe the product was sitting on a granite counter, the light was coming from the wrong direction, or the background was a piece of fabric because that was what I had nearby. Physical product photography is surprisingly time-consuming. You clear a surface, move lights, find props, fight reflections, take twenty pictures, and then do it again when the print changes.
+3D printing is another passion of mine. I sell some of the things I design and print through [NEWMANzoneCREATIONS on Etsy](https://www.etsy.com/shop/NEWMANzoneCREATIONS): playful wall hooks, desk organizers, and other functional pieces for kids' spaces. Designing and printing the object is the part I naturally want to spend time on. Producing a complete set of professional listing photographs can become a second project for every product.
+
+The source photo did not need to be terrible. It just needed to be normal. Maybe the product was sitting on a granite counter, the light was coming from the wrong direction, or the background was a piece of fabric because that was what I had nearby. Professional product photography asks for much more: a clean backdrop, diffused key and fill light, controlled shadows, accurate color, useful scale, multiple angles, and believable scenes that show how the product fits into a real room.
+
+I tried building a small tabletop studio. It helped, but it did not make the hard parts disappear. Lighting small 3D-printed objects evenly without flattening their texture is difficult. Hard shadows make the scene look cheap; too much diffusion can erase form. Glossy filament catches reflections, light colors shift, and a seamless background still does not create the bedroom, art table, or gift context a shopper needs. Every new design, color, or customization means arranging the lights, props, camera, and scene again. Hiring a professional or building a full studio would solve parts of that problem, but at a cost and scale that do not make sense for every small product experiment.
 
 I wanted the model to do the staging while preserving the object. This is the
 kind of result I was after: a coherent listing scene where the printed object
@@ -27,7 +31,6 @@ My practical conclusion is:
 
 - FLUX.2 Klein 4B is the model I would use most often for fast, attractive scene creation when I do not need the new scene to contain exact text.
 - Native Qwen Image Edit 2511 is my personal favorite for product fidelity, existing artwork, and text-sensitive edits.
-- Nunchaku was an interesting engineering path, but I would not choose the tested setup over native Qwen or FLUX for this workload.
 
 The path to that answer was the useful part.
 
@@ -86,6 +89,15 @@ AMD looked excellent on paper. The 16 GB RX 9060 XT in particular deserves atten
 
 My early runs proved that the idea worked and then exposed everything that could go wrong.
 
+<table>
+  <tr>
+    <td align="center"><img src="assets/results/zimage-rejected-artifacts.png" width="180" alt="A rejected edit covered in bright and dark artifacts"><br><sub><strong>Artifacts</strong><br>Noise and false stars overwhelm the product.</sub></td>
+    <td align="center"><img src="assets/results/flux2-klein-room-drift.png" width="180" alt="A bedroom scene where the personalized sign text and artwork drifted"><br><sub><strong>Identity drift</strong><br>The room looks good; the product is no longer exact.</sub></td>
+    <td align="center"><img src="assets/results/longcat-clean-hero.png" width="180" alt="A soft product edit with unstable lettering and geometry"><br><sub><strong>Soft geometry</strong><br>Edges and lettering lose definition.</sub></td>
+    <td align="center"><img src="assets/results/flux2-klein-rocket-listing-clean.png" width="180" alt="An attractive rocket organizer image that redesigned the original object"><br><sub><strong>Quiet redesign</strong><br>Polished, but it invents a different organizer.</sub></td>
+  </tr>
+</table>
+
 The first full-quality native Qwen graph took about six minutes per image. The output could be excellent, but that latency was unusable for an interactive product. Reducing resolution helped. Quantizing helped fit models. Neither automatically solved end-to-end latency.
 
 I tried Qwen GGUF Q2 and Q3 variants. They reduced capacity pressure but did not beat the native Lightning path. I tried FLUX Kontext, Z-Image Turbo, FireRed, LongCat, and multiple FLUX.2 Klein configurations. Some were too slow. Some did not preserve the source. Some stayed too close to the original. Some looked attractive until I noticed that a name, edge, or piece of artwork had changed.
@@ -106,7 +118,7 @@ Qwen is still not a photocopier. It can drift, and a production workflow must ch
 
 I originally treated FLUX.2 Klein too much like a preview model because one text-heavy test exposed its weakness. That was the wrong conclusion.
 
-FLUX.2 Klein 4B is exceptionally useful when the requested scene does not need newly rendered text. It is fast, compositionally strong, and surprisingly consistent at making an object belong in a plausible environment. The FP8 distilled route at 0.8 MP generally landed around seven to eight seconds warm. July follow-ups with varied products and prompts landed between **6.6 and 8.4 seconds**, including the selected single-rocket edit at **7.1 seconds**. NVFP4 preview routes reached approximately four to seven seconds.
+FLUX.2 Klein 4B is exceptionally useful when the requested scene does not need newly rendered text. It is fast, compositionally strong, and surprisingly consistent at making an object belong in a plausible environment. The FP8 distilled route at 0.8 MP generally landed around seven to eight seconds warm. July follow-ups with varied products and prompts landed between **6.6 and 8.4 seconds**. NVFP4 preview routes reached approximately four to seven seconds.
 
 ![A locally generated FLUX.2 Klein scale-context scene retaining the source sign and its artwork](assets/results/flux2-klein-sign-scale-context.png)
 
@@ -119,16 +131,6 @@ FLUX still needs a preservation contract. It may simplify artwork, reinterpret s
 - validate either one before publication.
 
 That is much more useful than labeling one model "best."
-
-## What happened with Nunchaku
-
-I spent a lot of time getting a Nunchaku-compatible Qwen path running. It was worth doing.
-
-The work clarified the difference between official and community quantizations, pre-Blackwell INT4 and Blackwell FP4/NVFP4 files, custom wheels tied to Python and PyTorch versions, and isolated model speed versus complete graph latency. The strongest tested result was excellent.
-
-The tested QuantFunc Qwen 2511 ultimate-speed FP4 route still took roughly **25-27 seconds warm** at 0.8 MP. That was slower than native Qwen Lightning. The model name described the quantization variant, not a guarantee that the complete ComfyUI workflow would beat a native low-step graph. The text encoder, VAE, LoRA stack, model transitions, custom nodes, and output resolution all remained in the bill.
-
-I came away not wanting to operate that route. It added setup and compatibility burden without winning the decision that mattered to me. It belongs in the experiment log, not at the top of the recommendation table.
 
 ## Prompt engineering was half the project
 
@@ -204,15 +206,18 @@ As of July 15, 2026:
 - Gemini 3 Pro Image was about $0.134 for a 1K/2K image;
 - GPT Image 1 medium square images were $0.042 and high square images were $0.167, with portrait high images at $0.25.
 
-At a conservative 250 W whole-system estimate, an 8.4-second local image uses about 0.00058 kWh. The U.S. Energy Information Administration estimated 2026 summer residential electricity at 18.27 cents/kWh, putting that run near **$0.00011 in electricity**.
+This was never about recovering the purchase price of the GPU. I have several application ideas that depend on image generation, and a credible image feature needs much more than a few attractive demos. It needs model comparisons, prompt engineering, seed exploration, performance testing, regression suites, failure analysis, and repeated evaluation across different products and asset types.
 
-The hardware still has to be paid for. Ignoring resale value and the fact that I use the GPU for other work, a $530 card breaks even after roughly:
+A modest test matrix can become large very quickly:
 
-- 37,857 images compared with $0.014 calls;
-- 7,911 images compared with $0.067 calls;
-- 3,174 images compared with $0.167 calls.
+```text
+4 model routes * 20 products * 6 asset types * 5 prompt variants * 3 seeds
+= 7,200 generated images
+```
 
-That math does not say everyone should buy a GPU. It says the local case improves rapidly when a workflow produces many candidates, runs evaluation matrices, processes batches, or supports more than one AI workload. It also changes the psychology of experimentation. A hundred seeds may be wasteful, but it does not arrive as a surprise API invoice.
+At $0.042 per image, that matrix costs about **$302**. At $0.067, it costs about **$482**, before higher-resolution runs, rejected experiments, or another project. A serious development cycle can easily require thousands of generations, and every failure is still a billable API call.
+
+Local generation changes the kind of testing I am willing to do. I can sweep prompts, rerun a regression corpus after changing a workflow, compare quantizations, and inspect the ugly failures without watching each experiment increment an invoice. The GPU, electricity, setup, and engineering time are still real costs. The advantage is freedom to do the depth of experimentation that a good image product actually requires, across more than one project, while keeping private source material on my own machine.
 
 ## Privacy is a feature, not a slogan
 

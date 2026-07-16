@@ -39,26 +39,35 @@ For a deliberately conservative example:
 
 The electricity is about one-hundredth of a cent per image. Model loading, idle time, retries, cooling, and storage add overhead, but hardware amortization dominates this calculation.
 
-## Simple hardware break-even
+## The cost of serious development
 
-Ignoring resale value, engineering time, and the GPU's other uses:
+The real unit of work is a candidate, not a published image. Developing an
+image feature means comparing models, prompts, seeds, resolutions, asset types,
+and source-product edge cases. It also means rerunning a regression corpus after
+the graph, model, quantization, or prompt policy changes.
+
+One plausible evaluation matrix is:
 
 ```text
-break_even_images = hardware_cost / (cloud_cost - local_electricity_cost)
+4 model routes * 20 products * 6 asset types * 5 prompt variants * 3 seeds
+= 7,200 generated images
 ```
 
-For a $530 GPU and $0.000107 local electricity:
+That matrix costs approximately:
 
-| Avoided cloud price | Approximate break-even |
+| Cloud price | Cost for 7,200 generations |
 |---:|---:|
-| $0.014 | 38,150 images |
-| $0.0336 | 15,821 images |
-| $0.067 | 7,924 images |
-| $0.134 | 3,959 images |
-| $0.167 | 3,176 images |
-| $0.250 | 2,121 images |
+| $0.014 | $100.80 |
+| $0.0336 | $241.92 |
+| $0.042 | $302.40 |
+| $0.067 | $482.40 |
+| $0.134 | $964.80 |
+| $0.167 | $1,202.40 |
 
-The real unit of work is often a candidate, not a published image. A ten-image gallery with four candidates per asset and three prompt rounds can consume 120 generations. At that rate, 50 products represent 6,000 calls.
+Those totals do not include premium-resolution validation, failed calls,
+additional prompt rounds, or a second application. Local inference makes deep
+performance testing, prompt engineering, visual review, and regression testing
+possible without turning every experiment into a purchasing decision.
 
 ## Costs the simple table omits
 

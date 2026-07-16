@@ -38,15 +38,11 @@ Primary and upstream sources used to verify hardware specifications, software su
 - [ComfyUI Windows desktop guidance](https://docs.comfy.org/installation/desktop/windows) - NVIDIA/CUDA scope of the Windows desktop distribution.
 - [ComfyUI source](https://github.com/comfyanonymous/ComfyUI) - graph runtime and API server.
 - [ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF) - GGUF model-loading custom nodes used in several experiments.
-- [ComfyUI-nunchaku](https://github.com/nunchaku-ai/ComfyUI-nunchaku) - Nunchaku custom nodes and example workflows.
-- [Nunchaku/SVDQuant](https://github.com/nunchaku-ai/nunchaku) - low-bit diffusion inference engine.
 
 ## Models and adapters
 
 - [Qwen Image Edit 2511](https://huggingface.co/Qwen/Qwen-Image-Edit-2511) - official model card, capabilities, Diffusers example, and Apache 2.0 license.
 - [Qwen Image Edit 2511 Lightning](https://huggingface.co/lightx2v/Qwen-Image-Edit-2511-Lightning) - distilled LoRA and fused FP8 variants.
-- [Nunchaku Qwen Image Edit](https://huggingface.co/nunchaku-ai/nunchaku-qwen-image-edit) - official Nunchaku quantization guidance, including INT4 for pre-Blackwell and NVFP4 for Blackwell.
-- [QuantFunc Nunchaku Qwen Image Edit 2511](https://huggingface.co/QuantFunc/Nunchaku-Qwen-Image-EDIT-2511) - community quantization used for the tested 2511 ultimate-speed/balanced FP4 files. This is not an official Nunchaku release.
 - [FLUX.2 Klein 4B](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B) - official model card, 4B architecture, image-editing support, VRAM guidance, limitations, and Apache 2.0 license.
 - [FLUX.2 Klein 4B FP8](https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8) - official single-file FP8 model.
 - [LongCat Image Edit Turbo](https://huggingface.co/meituan-longcat/LongCat-Image-Edit-Turbo) - official model card, eight-NFE distilled model, and Apache 2.0 license.
