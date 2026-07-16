@@ -84,7 +84,12 @@ More detail and source links are in [Hardware selection](docs/hardware-selection
 
 ### FLUX.2 Klein: the practical winner
 
-![Two colorful 3D-printed rocket organizers staged in a bright children's art space](assets/results/flux2-klein-crayon-holders-lifestyle.jpg)
+![A locally generated scale-context product scene with a personalized space sign, ruler, and coffee cup](assets/results/flux2-klein-sign-scale-context.png)
+
+The provenance manifest records the raw ComfyUI output hash, local FLUX.2 Klein
+model, input hash, prompt, six steps, and seed `12100002`. The published PNG has
+the same pixels with metadata stripped so local paths and workflow details are
+not leaked through the image itself.
 
 This is the configuration I would reach for most often. FLUX is fast enough to make prompt and seed exploration feel interactive. It also has a strong eye for lighting, camera position, props, and coherent scene composition. Its weak point is not general aesthetics; it is asking the model to invent or preserve exact text and intricate identity-sensitive artwork. When the target scene does not need text, that limitation matters much less.
 

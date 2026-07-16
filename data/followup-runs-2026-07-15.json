@@ -17,6 +17,11 @@
     ]
   },
   "sources": {
+    "alex-room-sign-owned": {
+      "kind": "owned product photograph",
+      "published_path": "assets/sources/alex-room-sign-source.jpg",
+      "published_sha256": "23350899c99b74dd271ed5b654345c56223d9c9d51f4c59cb8f71d51e0b27935"
+    },
     "rocket-organizer-owned": {
       "kind": "owned product photograph",
       "published_path": "assets/sources/rocket-organizer-source.png",
@@ -54,6 +59,25 @@
     }
   },
   "runs": [
+    {
+      "id": "flux-sign-scale-context-historical",
+      "source": "alex-room-sign-owned",
+      "model": "FLUX.2 Klein 4B FP8 distilled",
+      "text_encoder": "Qwen 3 4B FP4 for FLUX.2",
+      "megapixels": 0.8,
+      "steps": 6,
+      "cfg": 1.0,
+      "sampler": "euler",
+      "seed": 12100002,
+      "elapsed_seconds": null,
+      "timing_class": "historical local ComfyUI output; exact queue timing was not retained",
+      "output": "assets/results/flux2-klein-sign-scale-context.png",
+      "source_sha256": "23350899c99b74dd271ed5b654345c56223d9c9d51f4c59cb8f71d51e0b27935",
+      "raw_output_sha256": "cc610cde7029e1ec7ca4ca7d6896080e4cb088ffe3285e4278452214f89682ea",
+      "published_sha256": "151a3664a5bb7fb3bc41ecd567af8e3788f25c83168368954c5ef7542c73a75b",
+      "prompt": "Create an Etsy scale-context product photo. Keep the exact ALEX'S ROOM sign artwork, text, shape, and proportions unchanged. Place it on a warm neutral desk with a wooden ruler beside it and a simple coffee cup in the background, realistic perspective, natural shadows, polished marketplace photography.",
+      "provenance": "The raw local ComfyUI PNG contained the API graph, prompt, source hash, model, sampler, steps, and seed. Publication stripped PNG text metadata without changing pixels; both raw and published hashes are recorded."
+    },
     {
       "id": "flux-rocket-listing-clean",
       "source": "rocket-organizer-owned",
@@ -159,6 +183,7 @@
     }
   ],
   "selection_review": {
+    "sign_scale_context": "Selected from the original local FLUX.2 Klein experiments. The raw ComfyUI output hash and generation settings are retained in this manifest; the published copy is metadata-sanitized. Its exact historical queue timing was not recovered and is deliberately not claimed.",
     "rocket": "Candidate 2 selected for balanced props, readable silhouette, and cleaner composition. Candidate 1 was strong but busier; candidate 3 clipped the base; candidate 4 was less editorial.",
     "restoration": "Both FLUX edits retained too much physical damage and were rejected. The Qwen edit removed the scan artifacts while preserving the depot composition and was selected.",
     "game-concept": "Candidate 2 selected for the strongest silhouette, restrained material wear, and clean grounding shadow.",

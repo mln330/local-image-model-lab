@@ -12,10 +12,14 @@ I started this experiment in late May 2026 with a question that sounded simple: 
 The source photo did not need to be terrible. It just needed to be normal. Maybe the product was sitting on a granite counter, the light was coming from the wrong direction, or the background was a piece of fabric because that was what I had nearby. Physical product photography is surprisingly time-consuming. You clear a surface, move lights, find props, fight reflections, take twenty pictures, and then do it again when the print changes.
 
 I wanted the model to do the staging while preserving the object. This is the
-kind of result I was after: a bright, coherent listing scene where the printed
-objects feel photographed in place rather than pasted onto a background.
+kind of result I was after: a coherent listing scene where the printed object
+feels photographed in place rather than pasted onto a background. This pair is
+fully traceable: the source is my product photo, and the audit manifest records
+the source hash, raw ComfyUI output hash, prompt, model, settings, and seed.
 
-![Two colorful 3D-printed rocket organizers staged on a children's art desk by FLUX.2 Klein](assets/results/flux2-klein-crayon-holders-lifestyle.jpg)
+| Owned source photograph | Local FLUX.2 Klein edit |
+|---|---|
+| ![The original personalized space sign photographed on a granite counter](assets/sources/alex-room-sign-source.jpg) | ![The same sign staged on a desk with a ruler and coffee cup](assets/results/flux2-klein-sign-scale-context.png) |
 
 That turned into a much broader investigation. I tested model families, quantizations, text encoders, custom runtimes, step counts, resolutions, denoise values, warm and cold behavior, and a lot of prompts. I also learned that the configuration producing the best single image is not necessarily the system I want to operate.
 
@@ -104,7 +108,7 @@ I originally treated FLUX.2 Klein too much like a preview model because one text
 
 FLUX.2 Klein 4B is exceptionally useful when the requested scene does not need newly rendered text. It is fast, compositionally strong, and surprisingly consistent at making an object belong in a plausible environment. The FP8 distilled route at 0.8 MP generally landed around seven to eight seconds warm. July follow-ups with varied products and prompts landed between **6.6 and 8.4 seconds**, including the selected single-rocket edit at **7.1 seconds**. NVFP4 preview routes reached approximately four to seven seconds.
 
-![FLUX.2 Klein staging two colorful 3D-printed rocket organizers in a bright art space](assets/results/flux2-klein-crayon-holders-lifestyle.jpg)
+![A locally generated FLUX.2 Klein scale-context scene retaining the source sign and its artwork](assets/results/flux2-klein-sign-scale-context.png)
 
 This is the route that makes local iteration feel different. At that latency, trying another camera angle, prop set, or lighting direction is not a batch job. It is a conversation with the image.
 

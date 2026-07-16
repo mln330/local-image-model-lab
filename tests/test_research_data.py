@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -94,6 +96,7 @@ class ResearchDataTests(unittest.TestCase):
             "flux2-klein-game-asset.png",
             "flux2-klein-synthetic-data.png",
             "flux2-klein-rocket-lifestyle.png",
+            "flux2-klein-crayon-holders-lifestyle.jpg",
             "planter-private",
         }
         searchable = [ROOT / "README.md", ROOT / "ARTICLE.md"]
@@ -102,6 +105,42 @@ class ResearchDataTests(unittest.TestCase):
         combined = "\n".join(path.read_text(encoding="utf-8") for path in searchable)
 
         self.assertEqual({value for value in retired if value in combined}, set())
+
+    def test_featured_flux_output_matches_audited_provenance(self) -> None:
+        manifest = json.loads(
+            (ROOT / "data" / "followup-runs-2026-07-15.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        run = next(
+            item
+            for item in manifest["runs"]
+            if item["id"] == "flux-sign-scale-context-historical"
+        )
+        output = (ROOT / run["output"]).read_bytes()
+
+        self.assertEqual(hashlib.sha256(output).hexdigest(), run["published_sha256"])
+        self.assertEqual(run["source_sha256"], manifest["sources"][run["source"]]["published_sha256"])
+        self.assertEqual(run["raw_output_sha256"], "cc610cde7029e1ec7ca4ca7d6896080e4cb088ffe3285e4278452214f89682ea")
+        self.assertEqual(run["seed"], 12100002)
+        self.assertIn("scale-context product photo", run["prompt"])
+
+    def test_every_article_image_has_a_provenance_record(self) -> None:
+        manifest = json.loads(
+            (ROOT / "data" / "followup-runs-2026-07-15.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        article = (ROOT / "ARTICLE.md").read_text(encoding="utf-8")
+        article_assets = set(re.findall(r"\]\((assets/[^)]+)\)", article))
+        documented_assets = {
+            source["published_path"] for source in manifest["sources"].values()
+        }
+        documented_assets.update(
+            run["output"] for run in manifest["runs"] if "output" in run
+        )
+
+        self.assertEqual(article_assets - documented_assets, set())
 
     def test_warm_flux_followups_are_interactive(self) -> None:
         manifest = json.loads(
