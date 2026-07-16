@@ -2,7 +2,7 @@
 
 ## The machine and the purchase
 
-The experiment workstation uses a **PNY Dual Fan OC GeForce RTX 5060 Ti 16 GB GDDR7** purchased refurbished for **$530** from [Newegg](https://www.newegg.com/pny-technologies-inc-rtx-5060-ti-16gb-dual-fan-oc-geforce-rtx-5060-ti-graphics-card-double-fans/p/N82E16814985024?item=N82E16814985024).
+The experiment workstation uses a **PNY Dual Fan OC GeForce RTX 5060 Ti 16 GB GDDR7** purchased refurbished for **$530 in May 2026** from [Newegg](https://www.newegg.com/pny-technologies-inc-rtx-5060-ti-16gb-dual-fan-oc-geforce-rtx-5060-ti-graphics-card-double-fans/p/N82E16814985024?item=N82E16814985024).
 
 The purchase goal was broader than image generation. The card needed to support:
 
@@ -56,7 +56,7 @@ The 16 GB refurbished card was therefore a capacity purchase first and a gaming-
 
 ## Current price snapshot
 
-These are ordinary U.S. prices observed on **July 15, 2026**. They are a dated shopping snapshot, not a forecast. The bands exclude isolated in-store clearance prices and extreme third-party marketplace listings.
+These are the latest ordinary U.S. prices I collected on **July 15, 2026**, two months after buying the test card. They are a dated shopping snapshot, not the prices available on my May purchase date or a forecast. The bands exclude isolated in-store clearance prices and extreme third-party marketplace listings.
 
 | GPU | VRAM | Board power | Launch/SEP | Observed July 2026 band | Local-AI assessment |
 |---|---:|---:|---:|---:|---|

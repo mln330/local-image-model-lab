@@ -124,16 +124,46 @@ class ResearchDataTests(unittest.TestCase):
         self.assertEqual(run["seed"], 12100002)
         self.assertIn("scale-context product photo", run["prompt"])
 
+    def test_selected_gallery_outputs_match_audited_provenance(self) -> None:
+        manifest = json.loads(
+            (ROOT / "data" / "followup-runs-2026-07-15.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        expected_hashes = {
+            "flux-rocket-themed-room-selected": "4e25805dc4feff75014bf681aa6a0bb21b00094805d1f4c37aa1e931046f729e",
+            "flux-rocket-classroom-desk-selected": "f4857925a0f79ac6059be80aeede4c226905f63177e3d9ee55f2fda029d59eee",
+            "flux-rocket-craft-desk-selected": "ab8a04320d1600b33c8989ef00e50c8e90ae2aa21267d77d8aea328c95117060",
+            "flux-unicorn-styled-vignette-selected": "8a1e20369316f62de2c9ad31dec56bda45c1cd8c328659db6c58fdb59f8b09c9",
+            "flux-unicorn-room-context-selected": "b5c7ffcb3c4f6960862bda72e7898dda6668e5d2406209b76a096476b531ebb0",
+            "flux-owl-homework-desk-selected": "6bd242bb50829ae00b732dece3b6cc8453e393cf4f65368af97a749c2c81bcbc",
+            "flux-owl-everyday-desk-selected": "74f74fc114d9b96562a0ddbc1453fe2e7a401d34b93a0e2d29f8672c14842b3b",
+            "flux-owl-classroom-vignette-selected": "b8c9aac236682561a28a2eb5aa013a4300411d24986b7c3cfca6cf4b4b137ef5",
+            "qwen-sign-clean-hero-quality-target": "26581dcaa82969981e2395bae2e795d7fb7afcce998ef3318495a2c22b9bfc3c",
+            "qwen-sign-room-lifestyle-quality-target": "fca875f3e8cdb19ddefb24b5ca4f74a06a2e1340484b9c9febb45118550c6e4e",
+            "qwen-sign-gift-context-quality-target": "9ae661f176d0509d0a6e1e8246d9a8efb3556f314c0841d0fcc6f7647806eac5",
+        }
+        runs = {run["id"]: run for run in manifest["runs"]}
+
+        for run_id, expected_hash in expected_hashes.items():
+            run = runs[run_id]
+            actual_hash = hashlib.sha256((ROOT / run["output"]).read_bytes()).hexdigest()
+            self.assertEqual(actual_hash, expected_hash, run_id)
+            self.assertEqual(run["published_sha256"], expected_hash, run_id)
+
     def test_every_article_image_has_a_provenance_record(self) -> None:
         manifest = json.loads(
             (ROOT / "data" / "followup-runs-2026-07-15.json").read_text(
                 encoding="utf-8"
             )
         )
-        article = (ROOT / "ARTICLE.md").read_text(encoding="utf-8")
-        article_assets = set(re.findall(r"\]\((assets/[^)]+)\)", article))
+        published_docs = "\n".join(
+            (ROOT / path).read_text(encoding="utf-8")
+            for path in ("ARTICLE.md", "README.md")
+        )
+        article_assets = set(re.findall(r"\]\((assets/[^)]+)\)", published_docs))
         article_assets.update(
-            re.findall(r'<img[^>]+src="(assets/[^"]+)"', article)
+            re.findall(r'<img[^>]+src="(assets/[^"]+)"', published_docs)
         )
         documented_assets = {
             source["published_path"] for source in manifest["sources"].values()
