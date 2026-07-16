@@ -11,11 +11,11 @@ I started this experiment in late May 2026 with a question that sounded simple: 
 
 The source photo did not need to be terrible. It just needed to be normal. Maybe the product was sitting on a granite counter, the light was coming from the wrong direction, or the background was a piece of fabric because that was what I had nearby. Physical product photography is surprisingly time-consuming. You clear a surface, move lights, find props, fight reflections, take twenty pictures, and then do it again when the print changes.
 
-I wanted the model to do the staging while preserving the object.
+I wanted the model to do the staging while preserving the object. This is the
+kind of result I was after: a bright, coherent listing scene where the printed
+objects feel photographed in place rather than pasted onto a background.
 
-| Ordinary source photo | Local edit on an RTX 5060 Ti 16 GB |
-|---|---|
-| ![A rocket-shaped 3D-printed organizer against a plain backdrop](assets/sources/rocket-organizer-source.png) | ![The organizer staged in a bright homework environment by FLUX.2 Klein](assets/results/flux2-klein-rocket-lifestyle.png) |
+![Two colorful 3D-printed rocket organizers staged on a children's art desk by FLUX.2 Klein](assets/results/flux2-klein-crayon-holders-lifestyle.jpg)
 
 That turned into a much broader investigation. I tested model families, quantizations, text encoders, custom runtimes, step counts, resolutions, denoise values, warm and cold behavior, and a lot of prompts. I also learned that the configuration producing the best single image is not necessarily the system I want to operate.
 
@@ -102,9 +102,9 @@ Qwen is still not a photocopier. It can drift, and a production workflow must ch
 
 I originally treated FLUX.2 Klein too much like a preview model because one text-heavy test exposed its weakness. That was the wrong conclusion.
 
-FLUX.2 Klein 4B is exceptionally useful when the requested scene does not need newly rendered text. It is fast, compositionally strong, and surprisingly consistent at making an object belong in a plausible environment. The FP8 distilled route at 0.8 MP generally landed around seven to eight seconds warm. In a July follow-up, a varied-prompt lifestyle edit completed in **8.4 seconds**. A second controlled variant completed in **7.6 seconds**. NVFP4 preview routes reached approximately four to seven seconds.
+FLUX.2 Klein 4B is exceptionally useful when the requested scene does not need newly rendered text. It is fast, compositionally strong, and surprisingly consistent at making an object belong in a plausible environment. The FP8 distilled route at 0.8 MP generally landed around seven to eight seconds warm. July follow-ups with varied products and prompts landed between **6.6 and 8.4 seconds**, including the selected single-rocket edit at **7.1 seconds**. NVFP4 preview routes reached approximately four to seven seconds.
 
-![FLUX.2 Klein turning an ordinary product shot into a bright desk scene](assets/results/flux2-klein-rocket-lifestyle.png)
+![FLUX.2 Klein staging two colorful 3D-printed rocket organizers in a bright art space](assets/results/flux2-klein-crayon-holders-lifestyle.jpg)
 
 This is the route that makes local iteration feel different. At that latency, trying another camera angle, prop set, or lighting direction is not a batch job. It is a conversation with the image.
 
@@ -212,13 +212,9 @@ That math does not say everyone should buy a GPU. It says the local case improve
 
 ## Privacy is a feature, not a slogan
 
-Some images should not be uploaded casually: family photos, home interiors, client prototypes, unreleased products, IDs in the background, or proprietary design work.
+Some images should not be uploaded casually: family photos, home interiors, client prototypes, unreleased products, IDs in the background, or proprietary design work. Local inference lets the model weights and source stay on the workstation, and it lets me choose whether any result leaves it.
 
-For one example, I used native Qwen to clean a home photo containing a television and distracting room context. The approved result is below. The source photo is intentionally not in this repository.
-
-![A private home planter photo cleaned locally into a calm shelf portrait](assets/results/qwen-private-photo-cleanup.png)
-
-That is the privacy advantage in concrete form. The model weights and source remained on the workstation. Only the result I chose to publish left it.
+I did not publish a real private photo to prove that point. The examples below use synthetic demonstration inputs generated locally for this article. That makes the data boundary unambiguous while still showing the editing workflow.
 
 Local does not mean automatically secure. A real application still needs authentication, storage boundaries, deletion policies, encrypted backups, logs that do not leak prompts or paths, and careful custom-node review. It does mean I can design the data boundary instead of accepting one by default.
 
@@ -226,35 +222,74 @@ Local does not mean automatically secure. A real application still needs authent
 
 Product photography was the stress test, not the only use case.
 
-### Private photo editing and restoration
+### Private editing and restoration
 
-Remove background clutter, relight an interior, restore an old scan, try a crop, or explore a style without uploading personal images. The local advantage is strongest when the source is sensitive and the user wants many iterations.
+Old scans, family archives, and home interiors are exactly the kinds of sources
+I may not want to upload. For a publishable demonstration, I generated a
+fictional damaged railway-depot scan with FLUX and restored it with native
+Qwen. The depot is synthetic; the workflow and the privacy boundary are real.
+
+| Synthetic damaged scan | Local Qwen restoration |
+|---|---|
+| ![A synthetic damaged black-and-white railway depot scan](assets/sources/restoration-synthetic-damaged-scan.png) | ![The same synthetic depot photograph repaired into a clean monochrome scan](assets/results/qwen-restoration-synthetic-scan.png) |
 
 ### Game assets and visual prototyping
 
-A real object can seed a prop, inventory icon, storyboard element, or art-direction reference. FLUX turned the rocket organizer into a clean isometric concept in one local edit:
+A rough sketch can become a prop, inventory icon, storyboard element, or
+art-direction reference before anyone commits to production geometry. Here a
+beetle-shaped lantern sketch became an isometric fantasy-game prop.
 
-![An isometric game-prop concept derived from the rocket organizer](assets/results/flux2-klein-game-asset.png)
+| Locally generated concept sketch | FLUX.2 Klein game-prop visualization |
+|---|---|
+| ![A pencil and marker concept sketch of a beetle-shaped lantern](assets/sources/game-concept-beetle-lantern-sketch.png) | ![A polished isometric brass beetle lantern with glowing teal glass](assets/results/flux2-klein-game-concept-beetle-lantern.png) |
 
-This is not final production geometry. It is fast visual language for deciding what to build.
+This is not a final mesh. It is fast visual language for deciding what is worth
+modeling.
 
 ### Synthetic data and evaluation fixtures
 
-Image-editing models can create controlled viewpoint, lighting, and background variants for computer-vision experiments. The identity must be checked, and synthetic data should not silently replace real evaluation data, but it can help bootstrap a test set.
+Controlled lighting, background, and viewpoint variants can bootstrap a
+computer-vision test set or exercise an inspection pipeline. I generated a
+fictional valve as the reference, then produced a low-light workshop variant
+while keeping the defining geometry and color scheme.
 
-![A controlled neutral-background synthetic variant of the rocket organizer](assets/results/flux2-klein-synthetic-data.png)
+| Synthetic reference object | Controlled low-light variant |
+|---|---|
+| ![A fictional turquoise industrial valve on a neutral studio background](assets/sources/synthetic-data-valve-reference.png) | ![The same valve under a cool workshop light with realistic sensor noise](assets/results/flux2-klein-synthetic-data-valve.png) |
+
+Synthetic data still needs identity checks, coverage analysis, and validation
+against real data. It supplements a test set; it does not certify one.
 
 ### Confidential design iteration
 
-Client packaging, industrial concepts, architectural ideas, unreleased interfaces, and internal campaign drafts can remain inside a local network. This is useful even when the final render eventually goes to a cloud service.
+Unreleased packaging, industrial concepts, and client sketches can stay inside
+a local network. This fictional charging-stand sketch demonstrates the path
+from an early marker drawing to a design-review render.
+
+| Early industrial-design sketch | Local preproduction render |
+|---|---|
+| ![A marker sketch of a modular headphone charging stand](assets/sources/confidential-design-headphone-stand-sketch.png) | ![A matte charcoal and cyan rendering of the charging stand](assets/results/flux2-klein-confidential-design-headphone-stand.png) |
 
 ### Diagrams and presentation visuals
 
-The model can generate a visual concept, texture, scene, or unlabeled illustration. Deterministic code should add arrows, measurements, legends, and factual text. The failed dimension experiments were a useful reminder that a beautiful label can still be wrong.
+Local models can turn a rough composition into a presentation-ready visual
+layer. I would still add labels, measurements, citations, and numbers with
+deterministic code; a convincing label is not necessarily a correct label.
 
-### Offline and embedded creative tools
+| Rough energy-flow sketch | Clean unlabeled presentation visual |
+|---|---|
+| ![A marker sketch connecting a solar house, battery, and electric car](assets/sources/presentation-energy-flow-sketch.png) | ![A clean isometric energy-flow illustration with blank space for code-rendered labels](assets/results/flux2-klein-presentation-energy-flow.png) |
 
-A local worker can keep functioning without API availability, rate limits, or network access. It can also expose a stable internal API to desktop tools, automation, and batch pipelines.
+### Offline creative tools
+
+A local worker can power a desktop sketch enhancer, private photo kiosk,
+storytelling tool, or batch editor without API availability or rate limits. A
+simple crayon lighthouse became a layered storybook composition while keeping
+the original subjects and palette recognizable.
+
+| Locally generated crayon input | FLUX.2 Klein storybook treatment |
+|---|---|
+| ![A child's crayon drawing of a lighthouse, moon, stars, and sailboat](assets/sources/offline-creative-lighthouse-drawing.png) | ![A layered paper-and-gouache treatment of the same lighthouse scene](assets/results/flux2-klein-offline-creative-lighthouse.png) |
 
 ## The workflow I would build now
 

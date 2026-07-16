@@ -4,9 +4,9 @@ How far can a $530 refurbished consumer GPU go with current open image-editing m
 
 This repository documents a hands-on experiment with an **RTX 5060 Ti 16 GB**, ComfyUI, native Qwen Image Edit, FLUX.2 Klein, several quantizations, and a lot of prompt iteration. The practical test was intentionally demanding: take an ordinary photo of a 3D-printed product, even when the lighting and background are not ideal, and turn it into polished Etsy-ready photography without rebuilding a tabletop studio for every shot.
 
-| Ordinary source photo | Local FLUX.2 Klein edit, 8.4 s warm |
+| Ordinary source photo | Local FLUX.2 Klein edit, 7.1 s warm |
 |---|---|
-| ![A 3D-printed rocket organizer photographed against a plain fabric background](assets/sources/rocket-organizer-source.png) | ![The same rocket organizer staged naturally on a sunlit homework desk](assets/results/flux2-klein-rocket-lifestyle.png) |
+| ![A 3D-printed rocket organizer photographed against a plain fabric background](assets/sources/rocket-organizer-source.png) | ![The same rocket organizer staged naturally in a bright children's art space](assets/results/flux2-klein-rocket-listing-clean.png) |
 
 The short answer is **yes**, with qualifications. The 16 GB RTX 5060 Ti is capable of attractive, useful image edits. The best system was not one model for every request:
 
@@ -84,7 +84,7 @@ More detail and source links are in [Hardware selection](docs/hardware-selection
 
 ### FLUX.2 Klein: the practical winner
 
-![A locally generated lifestyle scene of a rocket-shaped organizer](assets/results/flux2-klein-rocket-lifestyle.png)
+![Two colorful 3D-printed rocket organizers staged in a bright children's art space](assets/results/flux2-klein-crayon-holders-lifestyle.jpg)
 
 This is the configuration I would reach for most often. FLUX is fast enough to make prompt and seed exploration feel interactive. It also has a strong eye for lighting, camera position, props, and coherent scene composition. Its weak point is not general aesthetics; it is asking the model to invent or preserve exact text and intricate identity-sensitive artwork. When the target scene does not need text, that limitation matters much less.
 
@@ -128,10 +128,15 @@ Longer is not always better. The useful detail is a ranked contract, not a wall 
 
 The same local setup is useful anywhere privacy, volume, repeatability, or integration control matters.
 
-| Private photo cleanup | Game and asset ideation | Synthetic-data variation |
+| Private restoration | Game and asset ideation | Synthetic-data variation |
 |---|---|---|
-| ![A private home photo cleaned into a calm shelf portrait while its source remains unpublished](assets/results/qwen-private-photo-cleanup.png) | ![A rocket organizer transformed into a clean isometric game prop concept](assets/results/flux2-klein-game-asset.png) | ![The rocket organizer rendered as a controlled neutral-background inspection image](assets/results/flux2-klein-synthetic-data.png) |
-| The private source never has to leave the machine. This approved result is public; the input is intentionally not. | A real object can become a game prop, storyboard element, or visual direction without starting from a blank prompt. | Controlled viewpoint and lighting variants can bootstrap evaluation or computer-vision experiments, with human review for identity drift. |
+| ![A synthetic damaged depot scan repaired into a clean monochrome image](assets/results/qwen-restoration-synthetic-scan.png) | ![A beetle-lantern sketch transformed into a clean isometric game prop](assets/results/flux2-klein-game-concept-beetle-lantern.png) | ![A fictional valve rendered as a controlled low-light workshop variant](assets/results/flux2-klein-synthetic-data-valve.png) |
+| Sensitive sources can stay local; this public demonstration uses a clearly synthetic input. | A sketch can become a prop, storyboard element, or visual direction before production modeling. | Controlled lighting and background variants can bootstrap evaluation, with human review for identity drift. |
+
+| Confidential design iteration | Presentation visuals | Offline creative tools |
+|---|---|---|
+| ![A polished charcoal and cyan headphone-stand concept render](assets/results/flux2-klein-confidential-design-headphone-stand.png) | ![A clean unlabeled solar, battery, and electric-car energy-flow visual](assets/results/flux2-klein-presentation-energy-flow.png) | ![A child's lighthouse drawing transformed into layered storybook art](assets/results/flux2-klein-offline-creative-lighthouse.png) |
+| Early product concepts can remain on a local workstation while visual directions are explored. | Generate the visual layer locally, then add factual labels and numbers with code. | Desktop creative tools can transform sketches without API availability, metering, or network access. |
 
 Other useful directions include confidential client mockups, restoration, interior cleanup, color and material exploration, visual regression fixtures, offline creative tools, presentation art, and diagram backgrounds. Exact labels, dimensions, and factual annotations should still be rendered with deterministic code, not trusted to the image model. See [Use cases](docs/use-cases.md).
 

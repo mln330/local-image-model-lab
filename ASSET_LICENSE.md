@@ -2,7 +2,9 @@
 
 The source product photographs and generated result images under `assets/` are included for research documentation, comparison, and commentary. No blanket license is granted for their reuse.
 
-The private-photo-cleanup source is intentionally not included. Only the approved generated result is published.
+The non-commerce use-case inputs are synthetic demonstrations generated
+locally for this repository. No private third-party source or derivative is
+included.
 
 Any rights in the photographed product, product artwork, trademarks, or third-party source material remain with their respective owners. The repository author claims rights only in material they created and have authority to license.
 

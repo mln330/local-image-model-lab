@@ -4,6 +4,14 @@ These files are parameterized **API-format** ComfyUI graphs. They are intended f
 
 ## Templates
 
+### `flux2-klein-4b-text-to-image-api.json`
+
+This graph uses the same distilled FLUX.2 Klein 4B stack as the practical
+editing route, but starts from an empty latent. It is useful for generating
+synthetic demonstration inputs and original visual concepts without publishing
+private source material. Core placeholders are `WIDTH`, `HEIGHT`, `STEPS`,
+`CFG`, `PROMPT`, and `SEED` plus the shared model filenames.
+
 ### `qwen-image-edit-lightning-api.json`
 
 Core placeholders:
@@ -59,15 +67,22 @@ The exact `ultimate_speed` checkpoint used in the experiment was published by Qu
 
 This route is included for reproducibility. It produced an excellent individual output but was slower and operationally heavier than native Qwen Lightning, so it is not the selected production default.
 
-## Shared placeholders
+## Shared editing placeholders
 
-All templates also require:
+The image-edit templates also require:
 
 - `PRODUCT_IMAGE`
 - `PROMPT`
 - `NEGATIVE_PROMPT`
 - `SEED`
 - `OUTPUT_PREFIX`
+
+The text-to-image graph does not require `PRODUCT_IMAGE` or
+`NEGATIVE_PROMPT`.
+
+[`scripts/generate_article_examples.py`](../scripts/generate_article_examples.py)
+shows the text-to-image graph and editing graph used together to create,
+compare, and time the synthetic use-case demonstrations.
 
 [`scripts/run_workflow.py`](../scripts/run_workflow.py) fills the image and prompt placeholders and accepts the remaining values through repeated `--set KEY=VALUE` arguments.
 

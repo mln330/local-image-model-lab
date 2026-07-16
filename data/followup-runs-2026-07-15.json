@@ -6,52 +6,70 @@
     "comfyui": "0.22.3",
     "python": "3.12.11",
     "pytorch": "2.10.0+cu130",
-    "timing_scope": "ComfyUI API queue to output available in history"
+    "timing_scope": "ComfyUI API queue to output available in history",
+    "generation_definition": "scripts/generate_article_examples.py"
+  },
+  "source_policy": {
+    "statement": "All newly published non-commerce inputs are synthetic demonstrations generated locally. No private third-party source or derivative is included.",
+    "classes": [
+      "owned product photograph",
+      "locally generated synthetic demonstration"
+    ]
   },
   "sources": {
-    "rocket-organizer-public": {
+    "rocket-organizer-owned": {
+      "kind": "owned product photograph",
       "published_path": "assets/sources/rocket-organizer-source.png",
       "published_sha256": "5a2d3b36a3ed8790fb4a3075c88c52a699cce6c550f80d395cc402b6962c9a1e"
     },
-    "rainbow-organizer-private": {
-      "published": false,
-      "original_sha256": "5a83335322af3dc2f6235c8c35095519735262e894c72b3b679e02d73e935b5f"
+    "restoration-synthetic": {
+      "kind": "locally generated synthetic demonstration",
+      "published_path": "assets/sources/restoration-synthetic-damaged-scan.png",
+      "published_sha256": "7f649b73f13719224b9e0af4f3f05f8bd38f905b3854c82877ffa5b49fe7b1de"
     },
-    "planter-private": {
-      "published": false,
-      "original_sha256": "3bc30a7080661a6448d5c8bf1584d0e46c2e7bc8cb9cc3e6ca5b8dbe587bce91"
+    "game-concept-synthetic": {
+      "kind": "locally generated synthetic demonstration",
+      "published_path": "assets/sources/game-concept-beetle-lantern-sketch.png",
+      "published_sha256": "befa4fe51a107c253201832fe0f4c351d58f3550fcad2fa7ad87531392a43fd4"
+    },
+    "valve-synthetic": {
+      "kind": "locally generated synthetic demonstration",
+      "published_path": "assets/sources/synthetic-data-valve-reference.png",
+      "published_sha256": "d7989b5384a7385fd98405b12894808a5e4869807ba34612d8d8e4218c6d6919"
+    },
+    "design-synthetic": {
+      "kind": "locally generated synthetic demonstration",
+      "published_path": "assets/sources/confidential-design-headphone-stand-sketch.png",
+      "published_sha256": "50bd7d8e6688310b6dc614f7d7ce78bdb3736b33e27c098770fb0d8ec15c5cd"
+    },
+    "presentation-synthetic": {
+      "kind": "locally generated synthetic demonstration",
+      "published_path": "assets/sources/presentation-energy-flow-sketch.png",
+      "published_sha256": "f6084482f6371bc1f470ad910a1836d49d301f9bad4af75d8be5327963f26194"
+    },
+    "creative-synthetic": {
+      "kind": "locally generated synthetic demonstration",
+      "published_path": "assets/sources/offline-creative-lighthouse-drawing.png",
+      "published_sha256": "afa5770863edb012530f77727258c7a24adf8fa8efde44d3fd1e382b10e5a92a"
     }
   },
   "runs": [
     {
-      "id": "flux-rainbow-lifestyle-cold",
-      "source": "rainbow-organizer-private",
+      "id": "flux-rocket-listing-clean",
+      "source": "rocket-organizer-owned",
       "model": "FLUX.2 Klein 4B FP8 distilled",
       "megapixels": 0.8,
       "steps": 6,
       "cfg": 1.0,
-      "seed": 7731901,
-      "elapsed_seconds": 23.204,
-      "timing_class": "cold FLUX load",
-      "published": false,
-      "prompt": "Create a polished lifestyle photograph of the exact 3D-printed rainbow desk organizer from the reference image. Preserve its rectangular gray compartment box, sky-blue front panel, layered rainbow colors and black outlines, open storage geometry, visible 3D-print texture, and the same assortment of pens, markers, scissors, and rulers. Place it naturally on a bright modern craft desk beside a sketchbook and a small cup, with soft daylight from the left, realistic contact shadow, coherent reflections, shallow depth of field, and an uncluttered background. Keep the organizer as the clear subject and use a natural three-quarter camera angle. Do not add, remove, duplicate, resize, or redesign the organizer or its contents. No text, labels, badges, arrows, hands, or people."
-    },
-    {
-      "id": "flux-rocket-lifestyle-warm",
-      "source": "rocket-organizer-public",
-      "model": "FLUX.2 Klein 4B FP8 distilled",
-      "megapixels": 0.8,
-      "steps": 6,
-      "cfg": 1.0,
-      "seed": 7731902,
-      "elapsed_seconds": 8.395,
-      "timing_class": "warm varied prompt and source",
-      "output": "assets/results/flux2-klein-rocket-lifestyle.png",
-      "prompt": "Create a polished lifestyle photograph of the exact 3D-printed rocket-shaped pen organizer from the reference image. Preserve the cream body, red fins and top panel, black outlines, orange flame, circular black window, rectangular storage shape, visible 3D-print texture, and the same pens and markers. Place it naturally on a bright child-friendly homework desk with a closed notebook, a few colored pencils, soft morning window light, realistic contact shadow, coherent reflections, shallow depth of field, and a calm uncluttered background. Keep the organizer as the clear subject at a natural three-quarter camera angle. Do not add, remove, duplicate, resize, or redesign the organizer or its contents. No text, labels, badges, arrows, hands, or people."
+      "seed": 71526001,
+      "elapsed_seconds": 7.12,
+      "timing_class": "warm varied prompt",
+      "output": "assets/results/flux2-klein-rocket-listing-clean.png",
+      "prompt_key": "ROCKET_PROMPTS[1]"
     },
     {
       "id": "qwen-rocket-lifestyle-route-transition",
-      "source": "rocket-organizer-public",
+      "source": "rocket-organizer-owned",
       "model": "Native Qwen Image Edit 2511 mixed FP8 with Lightning LoRA",
       "steps": 2,
       "cfg": 1.0,
@@ -59,47 +77,94 @@
       "seed": 7731903,
       "elapsed_seconds": 165.969,
       "timing_class": "cold route transition in updated runtime; excluded from prior warm benchmark",
-      "output": "assets/results/qwen-rocket-lifestyle.png",
-      "prompt": "Create a polished lifestyle photograph of the exact 3D-printed rocket-shaped pen organizer from the reference image. Preserve the cream body, red fins and top panel, black outlines, orange flame, circular black window, rectangular storage shape, visible 3D-print texture, and the same pens and markers. Place it naturally on a bright child-friendly homework desk with a closed notebook, a few colored pencils, soft morning window light, realistic contact shadow, coherent reflections, shallow depth of field, and a calm uncluttered background. Keep the organizer as the clear subject at a natural three-quarter camera angle. Do not add, remove, duplicate, resize, or redesign the organizer or its contents. No text, labels, badges, arrows, hands, or people."
+      "output": "assets/results/qwen-rocket-lifestyle.png"
     },
     {
-      "id": "qwen-private-photo-cleanup",
-      "source": "planter-private",
+      "id": "qwen-synthetic-scan-restoration",
+      "source": "restoration-synthetic",
       "model": "Native Qwen Image Edit 2511 mixed FP8 with Lightning LoRA",
-      "steps": 2,
+      "steps": 3,
       "cfg": 1.0,
       "denoise": 0.85,
-      "seed": 7731904,
-      "elapsed_seconds": 155.426,
-      "timing_class": "diagnostic updated-runtime run; excluded from prior warm benchmark",
-      "output": "assets/results/qwen-private-photo-cleanup.png",
-      "prompt": "Edit this private home photo into a clean interior photograph while preserving the exact white 3D-printed creature planter, its green saucer, the pothos plant, leaf shapes, stems, and visible print texture. Remove the television, sports broadcast, cables, and distracting room clutter. Place the planter naturally on a simple light-oak shelf against a warm off-white wall, with soft indirect window light, realistic contact shadow, calm neutral styling, and shallow depth of field. Keep the object and plant physically believable. No text, logos, people, extra plants, labels, badges, or decorative clutter."
+      "seed": 71527000,
+      "elapsed_seconds": 114.473,
+      "timing_class": "cold route transition in updated runtime; illustrative, not a warm benchmark",
+      "output": "assets/results/qwen-restoration-synthetic-scan.png",
+      "prompt": "Restore this exact archival railway-depot photograph while preserving the architecture, camera position, monochrome character, period details, tracks, storefront geometry, and original composition. Remove every paper crease, tear, scratch, dust spot, stain, edge silvering, and scanner artifact. Reconstruct only the missing photographic emulsion from surrounding evidence. Recover balanced black-and-white tonal detail and clean paper edges. Do not colorize, sepia-tone, modernize, crop, warp, add people, alter the building, or invent readable text. The output must look like a professionally restored museum scan of the same undamaged negative, not a photograph of damaged paper."
     },
     {
-      "id": "flux-game-asset-route-transition",
-      "source": "rocket-organizer-public",
+      "id": "flux-game-concept-beetle-lantern",
+      "source": "game-concept-synthetic",
       "model": "FLUX.2 Klein 4B FP8 distilled",
       "megapixels": 0.8,
       "steps": 6,
       "cfg": 1.0,
-      "seed": 7731905,
-      "elapsed_seconds": 43.113,
-      "timing_class": "cold route transition from Qwen",
-      "output": "assets/results/flux2-klein-game-asset.png",
-      "prompt": "Transform the rocket-shaped desk organizer from the reference into a polished isometric game inventory asset for a cheerful space-exploration game. Preserve the cream, red, black, and orange color palette, circular window, side fins, flame motif, and recognizable rocket silhouette, but simplify the object into a clean stylized 3D game prop. Show the prop alone at a three-quarter isometric angle on a transparent-looking neutral light-gray studio backdrop with a soft oval shadow. Crisp edges, readable silhouette, production-ready concept art, no environment. No text, labels, interface frame, badge, hands, people, watermark, or extra objects."
-    },
-    {
-      "id": "flux-synthetic-data-warm",
-      "source": "rocket-organizer-public",
-      "model": "FLUX.2 Klein 4B FP8 distilled",
-      "megapixels": 0.8,
-      "steps": 6,
-      "cfg": 1.0,
-      "seed": 7731906,
-      "elapsed_seconds": 7.615,
+      "seed": 71526131,
+      "elapsed_seconds": 6.6,
       "timing_class": "warm varied prompt",
-      "output": "assets/results/flux2-klein-synthetic-data.png",
-      "prompt": "Create a controlled synthetic-data photograph of the same exact 3D-printed rocket-shaped desk organizer from the reference. Preserve the cream body, red fins and top panel, black outlines, orange flame, circular black window, rectangular storage geometry, visible print-layer texture, and the same pens and markers. Show it from a high three-quarter inspection angle on a neutral medium-gray seamless surface under diffuse overcast-style lighting, with a soft contact shadow and the complete silhouette visible. Clean calibration-style framing, no dramatic styling, no other objects. Do not add, remove, duplicate, resize, or redesign the organizer or its contents. No text, labels, ruler, color chart, hands, people, watermark, or interface elements."
+      "output": "assets/results/flux2-klein-game-concept-beetle-lantern.png",
+      "prompt_key": "USE_CASES.game-concept.edit"
+    },
+    {
+      "id": "flux-synthetic-data-valve",
+      "source": "valve-synthetic",
+      "model": "FLUX.2 Klein 4B FP8 distilled",
+      "megapixels": 0.8,
+      "steps": 6,
+      "cfg": 1.0,
+      "seed": 71526151,
+      "elapsed_seconds": 6.61,
+      "timing_class": "warm varied prompt",
+      "output": "assets/results/flux2-klein-synthetic-data-valve.png",
+      "prompt_key": "USE_CASES.synthetic-data.edit"
+    },
+    {
+      "id": "flux-confidential-design-stand",
+      "source": "design-synthetic",
+      "model": "FLUX.2 Klein 4B FP8 distilled",
+      "megapixels": 0.8,
+      "steps": 6,
+      "cfg": 1.0,
+      "seed": 71526171,
+      "elapsed_seconds": 6.62,
+      "timing_class": "warm varied prompt",
+      "output": "assets/results/flux2-klein-confidential-design-headphone-stand.png",
+      "prompt_key": "USE_CASES.confidential-design.edit"
+    },
+    {
+      "id": "flux-presentation-energy-flow",
+      "source": "presentation-synthetic",
+      "model": "FLUX.2 Klein 4B FP8 distilled",
+      "megapixels": 0.8,
+      "steps": 6,
+      "cfg": 1.0,
+      "seed": 71526191,
+      "elapsed_seconds": 6.62,
+      "timing_class": "warm varied prompt",
+      "output": "assets/results/flux2-klein-presentation-energy-flow.png",
+      "prompt_key": "USE_CASES.presentation-visual.edit"
+    },
+    {
+      "id": "flux-offline-creative-lighthouse",
+      "source": "creative-synthetic",
+      "model": "FLUX.2 Klein 4B FP8 distilled",
+      "megapixels": 0.8,
+      "steps": 6,
+      "cfg": 1.0,
+      "seed": 71526211,
+      "elapsed_seconds": 6.64,
+      "timing_class": "warm varied prompt",
+      "output": "assets/results/flux2-klein-offline-creative-lighthouse.png",
+      "prompt_key": "USE_CASES.offline-creative.edit"
     }
-  ]
+  ],
+  "selection_review": {
+    "rocket": "Candidate 2 selected for balanced props, readable silhouette, and cleaner composition. Candidate 1 was strong but busier; candidate 3 clipped the base; candidate 4 was less editorial.",
+    "restoration": "Both FLUX edits retained too much physical damage and were rejected. The Qwen edit removed the scan artifacts while preserving the depot composition and was selected.",
+    "game-concept": "Candidate 2 selected for the strongest silhouette, restrained material wear, and clean grounding shadow.",
+    "synthetic-data": "Candidate 2 selected because all defining valve components remained visible under the adverse lighting condition.",
+    "confidential-design": "Candidate 2 selected for cleaner industrial-design surfacing and a more legible charging puck.",
+    "presentation-visual": "Candidate 2 selected for clearer energy paths and usable blank space. Factual labels remain a deterministic post-process responsibility.",
+    "offline-creative": "Candidate 2 selected for the strongest paper-and-gouache transformation while preserving the lighthouse, sailboat, moon, stars, island, and palette."
+  }
 }

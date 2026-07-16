@@ -100,7 +100,9 @@ Minimum controls:
 - record provenance without recording private content;
 - require explicit approval before any cloud fallback.
 
-The private-cleanup example in this repository intentionally publishes only the approved output. The source remained local and is not part of the repository.
+The public restoration and design examples in this repository use synthetic
+demonstration inputs generated locally. No private third-party source is
+published or required to demonstrate the workflow.
 
 ## Hybrid policy
 

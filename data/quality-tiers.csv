@@ -1,5 +1,5 @@
 decision,configuration,warm_time,role,sample
-Practical default,FLUX.2 Klein 4B distilled FP8 at 0.8 MP and six steps,about 7-8 seconds,Fast attractive text-free scene generation,assets/results/flux2-klein-rocket-lifestyle.png
+Practical default,FLUX.2 Klein 4B distilled FP8 at 0.8 MP and six steps,about 7-8 seconds,Fast attractive text-free scene generation,assets/results/flux2-klein-crayon-holders-lifestyle.jpg
 Quality favorite,Native Qwen Image Edit 2511 mixed FP8 + Lightning at 768-class and two steps,11-12 seconds,Product identity artwork and existing text,assets/results/qwen-rocket-lifestyle.png
 Fast preview,FLUX.2 Klein 4B NVFP4 at 0.8 MP and four steps,4-5 seconds,Lowest-latency visual direction,assets/results/flux2-klein-nvfp4-speed-room.png
 Larger fast preview,FLUX.2 Klein 4B NVFP4 at 1.2 MP and four steps,6-7 seconds,Interactive candidate with more pixels,assets/results/flux2-klein-nvfp4-speed-plus-room.png

@@ -44,20 +44,64 @@ class ResearchDataTests(unittest.TestCase):
 
         self.assertEqual(missing, [])
 
-    def test_private_sources_do_not_publish_paths(self) -> None:
+    def test_published_sources_have_explicit_provenance(self) -> None:
         manifest = json.loads(
             (ROOT / "data" / "followup-runs-2026-07-15.json").read_text(
                 encoding="utf-8"
             )
         )
-        private_sources = [
-            source
-            for source in manifest["sources"].values()
-            if source.get("published") is False
+        allowed_kinds = set(manifest["source_policy"]["classes"])
+
+        self.assertGreaterEqual(len(manifest["sources"]), 7)
+        for source in manifest["sources"].values():
+            self.assertIn(source["kind"], allowed_kinds)
+            self.assertTrue((ROOT / source["published_path"]).is_file())
+
+    def test_use_case_gallery_has_source_and_result_for_every_category(self) -> None:
+        pairs = [
+            (
+                "assets/sources/restoration-synthetic-damaged-scan.png",
+                "assets/results/qwen-restoration-synthetic-scan.png",
+            ),
+            (
+                "assets/sources/game-concept-beetle-lantern-sketch.png",
+                "assets/results/flux2-klein-game-concept-beetle-lantern.png",
+            ),
+            (
+                "assets/sources/synthetic-data-valve-reference.png",
+                "assets/results/flux2-klein-synthetic-data-valve.png",
+            ),
+            (
+                "assets/sources/confidential-design-headphone-stand-sketch.png",
+                "assets/results/flux2-klein-confidential-design-headphone-stand.png",
+            ),
+            (
+                "assets/sources/presentation-energy-flow-sketch.png",
+                "assets/results/flux2-klein-presentation-energy-flow.png",
+            ),
+            (
+                "assets/sources/offline-creative-lighthouse-drawing.png",
+                "assets/results/flux2-klein-offline-creative-lighthouse.png",
+            ),
         ]
 
-        self.assertTrue(private_sources)
-        self.assertTrue(all("published_path" not in source for source in private_sources))
+        missing = [path for pair in pairs for path in pair if not (ROOT / path).is_file()]
+        self.assertEqual(missing, [])
+
+    def test_retired_or_third_party_examples_are_not_referenced(self) -> None:
+        retired = {
+            "qwen-private-photo-cleanup.png",
+            "flux2-klein-game-asset.png",
+            "flux2-klein-synthetic-data.png",
+            "flux2-klein-rocket-lifestyle.png",
+            "planter-private",
+        }
+        searchable = [ROOT / "README.md", ROOT / "ARTICLE.md"]
+        searchable.extend((ROOT / "docs").glob("*.md"))
+        searchable.extend((ROOT / "data").glob("*.json"))
+        combined = "\n".join(path.read_text(encoding="utf-8") for path in searchable)
+
+        self.assertEqual({value for value in retired if value in combined}, set())
 
     def test_warm_flux_followups_are_interactive(self) -> None:
         manifest = json.loads(
