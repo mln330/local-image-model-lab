@@ -282,14 +282,28 @@ Product photography was the stress test, not the only use case.
 
 ### Private editing and restoration
 
-Old scans, family archives, and home interiors are exactly the kinds of sources
-I may not want to upload. For a publishable demonstration, I generated a
+This use case became personal for me. My dad has been using AI to repair
+damaged historical family photographs as part of our family genealogy work,
+and I am exploring whether a local workflow can help him restore more of those
+scans without uploading the family archive to a cloud service. It is a good fit
+for local image editing: the material is private, experimentation may require
+many attempts, and the original scan can remain untouched beside every repaired
+version.
+
+None of our real family photographs or restorations are included in this
+article or repository. For the publishable demonstration below, I generated a
 fictional damaged railway-depot scan with FLUX and restored it with native
-Qwen. The depot is synthetic; the workflow and the privacy boundary are real.
+Qwen. The depot is synthetic; the restoration workflow and privacy boundary
+are real.
 
 | Synthetic damaged scan | Local Qwen restoration |
 |---|---|
 | ![A synthetic damaged black-and-white railway depot scan](assets/sources/restoration-synthetic-damaged-scan.png) | ![The same synthetic depot photograph repaired into a clean monochrome scan](assets/results/qwen-restoration-synthetic-scan.png) |
+
+Generative repair also needs restraint. A plausible face, building detail, or
+piece of clothing is not necessarily historically accurate. For genealogy and
+archival work, I would keep the original scan, label the repaired image as a
+derivative, and compare every meaningful detail before treating it as evidence.
 
 ### Game assets and visual prototyping
 
