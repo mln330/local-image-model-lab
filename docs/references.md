@@ -37,7 +37,15 @@ Primary and upstream sources used to verify hardware specifications, software su
 - [ComfyUI system requirements](https://docs.comfy.org/installation/system_requirements) - supported operating systems, GPU backends, Python, and PyTorch guidance.
 - [ComfyUI Windows desktop guidance](https://docs.comfy.org/installation/desktop/windows) - NVIDIA/CUDA scope of the Windows desktop distribution.
 - [ComfyUI source](https://github.com/comfyanonymous/ComfyUI) - graph runtime and API server.
+- [ComfyUI official documentation](https://docs.comfy.org/) - node-based interface, inference engine, local installation, and development documentation.
+- [ComfyUI workflow concepts](https://docs.comfy.org/development/core-concepts/workflow) - workflow graphs and JSON serialization.
+- [ComfyUI custom-node installation guidance](https://docs.comfy.org/installation/install_custom_node) - extension installation and security cautions.
 - [ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF) - GGUF model-loading custom nodes used in several experiments.
+- [Hugging Face Diffusers pipelines](https://huggingface.co/docs/diffusers/api/pipelines/overview) - code-first inference pipelines and supported model components.
+- [InvokeAI](https://invoke.ai/) - local creative canvas and node-based workflow alternative.
+- [Stable Diffusion WebUI Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge) - prompt-oriented local UI and inference platform.
+- [Open Source AI Definition 1.0](https://opensource.org/ai/open-source-ai-definition) - use, study, modify, and share freedoms plus the preferred form for modification.
+- [Open weights versus Open Source AI](https://opensource.org/ai/open-weights) - why downloadable weights alone are not necessarily a complete open-source AI system.
 
 ## Models and adapters
 

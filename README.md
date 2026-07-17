@@ -1,6 +1,6 @@
 # Local Image Model Lab
 
-How far can a $530 refurbished consumer GPU go with current open image-editing models?
+How far can a $530 refurbished consumer GPU go with current open-weight image-editing models?
 
 This repository documents a hands-on experiment with an **RTX 5060 Ti 16 GB**, ComfyUI, native Qwen Image Edit, FLUX.2 Klein, several quantizations, and a lot of prompt iteration. The practical test was intentionally demanding: take an ordinary photo of a 3D-printed product, even when the lighting and background are not ideal, and turn it into polished Etsy-ready photography without rebuilding a tabletop studio for every shot.
 
