@@ -4,9 +4,9 @@ How far can a $530 refurbished consumer GPU go with current open image-editing m
 
 This repository documents a hands-on experiment with an **RTX 5060 Ti 16 GB**, ComfyUI, native Qwen Image Edit, FLUX.2 Klein, several quantizations, and a lot of prompt iteration. The practical test was intentionally demanding: take an ordinary photo of a 3D-printed product, even when the lighting and background are not ideal, and turn it into polished Etsy-ready photography without rebuilding a tabletop studio for every shot.
 
-| Ordinary source photo | Verified local FLUX.2 Klein edit |
+| Ordinary source photo | Local FLUX.2 Klein room context |
 |---|---|
-| ![A personalized space sign photographed on a granite counter](assets/sources/alex-room-sign-source.jpg) | ![The same sign staged on a desk with a ruler and coffee cup](assets/results/flux2-klein-sign-scale-context.png) |
+| ![An ordinary source photograph of a 3D-printed rocket organizer](assets/sources/rocket-organizer-source.png) | ![The rocket organizer staged in a space-themed reading nook](assets/results/flux2-klein-rocket-themed-room.png) |
 
 The short answer is **yes**, with qualifications. The 16 GB RTX 5060 Ti is capable of attractive, useful image edits. The best system was not one model for every request:
 
@@ -39,11 +39,11 @@ A realistic application test matrix can require thousands of outputs before laun
 
 ## Why a 5060 Ti 16 GB?
 
-I bought a **PNY Dual Fan OC GeForce RTX 5060 Ti 16 GB GDDR7** refurbished for **$530** from [Newegg](https://www.newegg.com/pny-technologies-inc-rtx-5060-ti-16gb-dual-fan-oc-geforce-rtx-5060-ti-graphics-card-double-fans/p/N82E16814985024?item=N82E16814985024).
+I bought a **PNY Dual Fan OC GeForce RTX 5060 Ti 16 GB GDDR7** refurbished for **$530 in May 2026** from [Newegg](https://www.newegg.com/pny-technologies-inc-rtx-5060-ti-16gb-dual-fan-oc-geforce-rtx-5060-ti-graphics-card-double-fans/p/N82E16814985024?item=N82E16814985024).
 
 This was never only an image-generation purchase. I wanted a card that could support broad local-AI experimentation: image editing, multimodal models, speech, embeddings, coding assistants, and useful local LLMs. Eight gigabytes would have required compromises too early. Twelve gigabytes looked like my minimum, but the 16 GB deal offered the best balance of capacity, CUDA compatibility, Blackwell precision support, power, and price that I could actually buy.
 
-Current street prices are volatile. This snapshot records ordinary U.S. asking prices observed on **July 15, 2026**, excluding one-off clearance deals and extreme marketplace listings:
+Current street prices are volatile. I bought the test card in May; this later snapshot records the latest ordinary U.S. asking prices I observed on **July 15, 2026**, excluding one-off clearance deals and extreme marketplace listings:
 
 | GPU | VRAM | Observed price band | Local-AI interpretation |
 |---|---:|---:|---|
@@ -74,20 +74,36 @@ More detail and source links are in [Hardware selection](docs/hardware-selection
 
 ### FLUX.2 Klein: the practical winner
 
-![A locally generated scale-context product scene with a personalized space sign, ruler, and coffee cup](assets/results/flux2-klein-sign-scale-context.png)
+| Classroom desk direction | Colorful craft-desk direction |
+|---|---|
+| ![A locally generated FLUX.2 Klein classroom-desk image of the rocket organizer](assets/results/flux2-klein-rocket-classroom-desk.png) | ![A locally generated FLUX.2 Klein craft-desk image of the rocket organizer](assets/results/flux2-klein-rocket-craft-desk.png) |
 
-The provenance manifest records the raw ComfyUI output hash, local FLUX.2 Klein
-model, input hash, prompt, six steps, and seed `12100002`. The published PNG has
-the same pixels with metadata stripped so local paths and workflow details are
-not leaked through the image itself.
+The provenance manifest records each raw ComfyUI output hash, local FLUX.2
+Klein model, input hash, prompt summary, six steps, and seed. The published PNGs
+have the same pixels with metadata stripped so local paths and workflow details
+are not leaked through the images themselves. Exact queue timing was not
+retained for these historical application runs, so none is claimed.
 
 This is the configuration I would reach for most often. FLUX is fast enough to make prompt and seed exploration feel interactive. It also has a strong eye for lighting, camera position, props, and coherent scene composition. Its weak point is not general aesthetics; it is asking the model to invent or preserve exact text and intricate identity-sensitive artwork. When the target scene does not need text, that limitation matters much less.
 
 ### Native Qwen: my quality favorite
 
-![A native Qwen Image Edit result preserving the rocket organizer in a soft daylight scene](assets/results/qwen-rocket-lifestyle.png)
+<table>
+  <tr>
+    <td align="center"><img src="assets/results/qwen-sign-clean-hero.png" width="320" alt="A clean Qwen hero photograph of the personalized room sign"><br><sub>Clean hero</sub></td>
+    <td align="center"><img src="assets/results/qwen-sign-room-lifestyle.png" width="320" alt="The personalized room sign mounted naturally in a child's bedroom"><br><sub>Room context</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/results/qwen-sign-gift-context.png" width="320" alt="The personalized room sign staged as a gift"><br><sub>Gift context</sub></td>
+    <td align="center"><img src="assets/results/qwen-rocket-lifestyle.png" width="320" alt="A native Qwen result preserving the rocket organizer in soft daylight"><br><sub>Optimized route on a second product</sub></td>
+  </tr>
+</table>
 
-Native Qwen produced the most faithful product edits across the experiments. It was the route I trusted when small geometry changes, personalized lettering, or existing artwork could make an otherwise beautiful image unusable.
+The first three images established the quality target with the slower 40-step
+native graph. The rocket image came from the later optimized route. Native Qwen
+produced the most faithful product edits across the experiments. It was the
+route I trusted when small geometry changes, personalized lettering, or
+existing artwork could make an otherwise beautiful image unusable.
 
 ## Prompt engineering mattered
 

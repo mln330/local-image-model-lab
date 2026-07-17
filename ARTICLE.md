@@ -15,15 +15,16 @@ The source photo did not need to be terrible. It just needed to be normal. Maybe
 
 I tried building a small tabletop studio. It helped, but it did not make the hard parts disappear. Lighting small 3D-printed objects evenly without flattening their texture is difficult. Hard shadows make the scene look cheap; too much diffusion can erase form. Glossy filament catches reflections, light colors shift, and a seamless background still does not create the bedroom, art table, or gift context a shopper needs. Every new design, color, or customization means arranging the lights, props, camera, and scene again. Hiring a professional or building a full studio would solve parts of that problem, but at a cost and scale that do not make sense for every small product experiment.
 
-I wanted the model to do the staging while preserving the object. This is the
-kind of result I was after: a coherent listing scene where the printed object
-feels photographed in place rather than pasted onto a background. This pair is
-fully traceable: the source is my product photo, and the audit manifest records
-the source hash, raw ComfyUI output hash, prompt, model, settings, and seed.
+I wanted the model to do the staging while preserving the object. The rocket
+organizer below is a direct statement of that goal. The source is an ordinary
+product photo. FLUX.2 Klein turned it into a believable room-context photograph
+in about seven seconds without requiring me to rebuild the physical scene. Both
+images are traceable: the audit manifest records the source hash, raw ComfyUI
+output hash, prompt, model, settings, seed, and elapsed time.
 
-| Owned source photograph | Local FLUX.2 Klein edit |
+| Owned source photograph | Local FLUX.2 Klein room context |
 |---|---|
-| ![The original personalized space sign photographed on a granite counter](assets/sources/alex-room-sign-source.jpg) | ![The same sign staged on a desk with a ruler and coffee cup](assets/results/flux2-klein-sign-scale-context.png) |
+| ![The original 3D-printed rocket organizer product photograph](assets/sources/rocket-organizer-source.png) | ![The same rocket organizer in a softly lit space-themed reading nook](assets/results/flux2-klein-rocket-themed-room.png) |
 
 That turned into a much broader investigation. I tested model families, quantizations, text encoders, custom runtimes, step counts, resolutions, denoise values, warm and cold behavior, and a lot of prompts. I also learned that the configuration producing the best single image is not necessarily the system I want to operate.
 
@@ -34,9 +35,35 @@ My practical conclusion is:
 
 The path to that answer was the useful part.
 
+## Local cost is not zero, but it changes behavior
+
+Before getting into hardware, the obvious question is: **what is the point of
+running this locally at all?** Cloud APIs remove setup work, scale immediately,
+and often offer higher absolute quality. They also meter every candidate.
+
+As of July 15, 2026:
+
+- FLUX.2 Klein 4B API image editing started around $0.014 per image;
+- Gemini 3.1 Flash Image was about $0.067 for a 1K image and $0.151 at 4K;
+- Gemini 3 Pro Image was about $0.134 for a 1K/2K image;
+- GPT Image 1 medium square images were $0.042 and high square images were $0.167, with portrait high images at $0.25.
+
+This was never about recovering the purchase price of the GPU. I have several application ideas that depend on image generation, and a credible image feature needs much more than a few attractive demos. It needs model comparisons, prompt engineering, seed exploration, performance testing, regression suites, failure analysis, and repeated evaluation across different products and asset types.
+
+A modest test matrix can become large very quickly:
+
+```text
+4 model routes * 20 products * 6 asset types * 5 prompt variants * 3 seeds
+= 7,200 generated images
+```
+
+At $0.042 per image, that matrix costs about **$302**. At $0.067, it costs about **$482**, before higher-resolution runs, rejected experiments, or another project. A serious development cycle can easily require thousands of generations, and every failure is still a billable API call.
+
+Local generation changes the kind of testing I am willing to do. I can sweep prompts, rerun a regression corpus after changing a workflow, compare quantizations, and inspect the ugly failures without watching each experiment increment an invoice. The GPU, electricity, setup, and engineering time are still real costs. The advantage is freedom to do the depth of experimentation that a good image product actually requires, across more than one project, while keeping private source material on my own machine.
+
 ## I wanted a local-AI card, not an image-only card
 
-I bought a refurbished **PNY Dual Fan OC GeForce RTX 5060 Ti 16 GB GDDR7** for **$530**.
+I bought a refurbished **PNY Dual Fan OC GeForce RTX 5060 Ti 16 GB GDDR7** for **$530 in May 2026**.
 
 Image editing was one reason for the purchase, but not the only one. I wanted a machine where I could experiment with local LLMs, multimodal models, coding assistants, speech, embeddings, retrieval, and whatever interesting open model appeared next. That changed how I thought about the GPU.
 
@@ -67,7 +94,7 @@ VRAM capacity is not a spec-sheet footnote. It determines which experiments are 
 
 ## What the alternatives cost in July 2026
 
-GPU pricing moves too quickly for a timeless table, so this is a dated snapshot. On **July 15, 2026**, I observed the following ordinary U.S. retail bands, excluding one-off local clearance deals and extreme marketplace listings:
+GPU pricing moves too quickly for a timeless table, so this is a dated snapshot. I bought my card in May; the prices below are the latest comparison I collected afterward, not the market as it looked on my purchase date. On **July 15, 2026**, I observed the following ordinary U.S. retail bands, excluding one-off local clearance deals and extreme marketplace listings:
 
 | GPU | VRAM | Observed price band | My read for local AI |
 |---|---:|---:|---|
@@ -108,9 +135,26 @@ That last category was the most educational. A beautiful image is not a successf
 
 Qwen Image Edit 2511 was the first family that made the whole project feel dependable. It understood the source image, followed detailed edits, and preserved personalized text and product artwork better than the creative-first alternatives.
 
-The full graph was too slow, but the Lightning adapter changed the tradeoff. The accepted two-step, 768-class configuration completed in roughly **11-12 seconds warm** in the controlled tests. Three steps moved into the 22-26 second range and added polish. One step could be faster, but the details became smeary and text reliability fell apart.
+The first three examples below came from the slower 40-step native graph. They
+were not the configuration I ultimately wanted to operate, but they established
+the quality target: one source sign could become a clean hero, a realistic room
+placement, and a gift-context image while retaining its defining artwork and
+readable personalization. The fourth image came from the later optimized Qwen
+route and showed that the same identity-first approach worked on a different
+physical product.
 
-![Native Qwen preserving the rocket organizer in a new daylight environment](assets/results/qwen-rocket-lifestyle.png)
+<table>
+  <tr>
+    <td align="center"><img src="assets/results/qwen-sign-clean-hero.png" width="360" alt="The personalized room sign isolated as a clean Qwen product hero"><br><sub><strong>Clean hero</strong><br>40-step native Qwen quality target.</sub></td>
+    <td align="center"><img src="assets/results/qwen-sign-room-lifestyle.png" width="360" alt="The personalized room sign mounted naturally in a child's bedroom"><br><sub><strong>Room context</strong><br>Artwork, text, scale, and placement remain coherent.</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/results/qwen-sign-gift-context.png" width="360" alt="The personalized room sign staged beside a wrapped gift"><br><sub><strong>Gift context</strong><br>A different buyer story from the same source.</sub></td>
+    <td align="center"><img src="assets/results/qwen-rocket-lifestyle.png" width="360" alt="The rocket organizer preserved in a new daylight environment by the optimized Qwen route"><br><sub><strong>Optimized route</strong><br>A second product after the speed work.</sub></td>
+  </tr>
+</table>
+
+The full graph was too slow, but the Lightning adapter changed the tradeoff. The accepted two-step, 768-class configuration completed in roughly **11-12 seconds warm** in the controlled tests. Three steps moved into the 22-26 second range and added polish. One step could be faster, but the details became smeary and text reliability fell apart.
 
 Qwen is still not a photocopier. It can drift, and a production workflow must check it. But it was my favorite balance when the photographed identity mattered.
 
@@ -120,7 +164,36 @@ I originally treated FLUX.2 Klein too much like a preview model because one text
 
 FLUX.2 Klein 4B is exceptionally useful when the requested scene does not need newly rendered text. It is fast, compositionally strong, and surprisingly consistent at making an object belong in a plausible environment. The FP8 distilled route at 0.8 MP generally landed around seven to eight seconds warm. July follow-ups with varied products and prompts landed between **6.6 and 8.4 seconds**. NVFP4 preview routes reached approximately four to seven seconds.
 
-![A locally generated FLUX.2 Klein scale-context scene retaining the source sign and its artwork](assets/results/flux2-klein-sign-scale-context.png)
+The opening rocket comparison established the basic result. I also wanted to
+know whether the workflow could create several useful directions from that
+source and then repeat the result on other real products. The two rocket scenes
+below and five images from two more 3D-printed products were selected after I
+reviewed the larger candidate sets, not just the first image returned by the
+workflow.
+
+<table>
+  <tr>
+    <td align="center"><img src="assets/results/flux2-klein-rocket-classroom-desk.png" width="320" alt="The rocket pencil holder staged on a bright classroom-style desk"><br><sub><strong>Rocket: classroom desk</strong><br>Colorful context with a clear product silhouette.</sub></td>
+    <td align="center"><img src="assets/results/flux2-klein-rocket-craft-desk.png" width="320" alt="The rocket pencil holder staged on a colorful children's craft desk"><br><sub><strong>Rocket: craft desk</strong><br>A second room direction from the same ordinary source.</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/results/flux2-klein-unicorn-styled-vignette.png" width="320" alt="A blue unicorn pencil holder staged in a bright craft-space vignette"><br><sub><strong>Unicorn: styled vignette</strong><br>Product-dominant framing with restrained stationery props.</sub></td>
+    <td align="center"><img src="assets/results/flux2-klein-unicorn-room-context.png" width="320" alt="A blue unicorn pencil holder shown on a colorful child's desk"><br><sub><strong>Unicorn: room context</strong><br>A plausible buyer setting without building the room physically.</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/results/flux2-klein-owl-homework-desk.png" width="220" alt="A brown owl pencil holder on a softly lit homework desk"><br><sub><strong>Owl: homework desk</strong><br>Warm light and natural desk context.</sub></td>
+    <td align="center"><img src="assets/results/flux2-klein-owl-everyday-desk.png" width="220" alt="A brown owl pencil holder in a clean everyday desk scene"><br><sub><strong>Owl: everyday use</strong><br>A simpler scene with the product kept visually dominant.</sub></td>
+    <td align="center"><img src="assets/results/flux2-klein-owl-classroom-vignette.png" width="220" alt="A brown owl pencil holder in a bright classroom-style vignette"><br><sub><strong>Owl: classroom vignette</strong><br>A second buyer-relevant environment from the same source.</sub></td>
+  </tr>
+</table>
+
+The three selected rocket images, including the opening comparison, came from
+one owned source photograph and three prompt directions. The two unicorn images
+came from separate owned source photographs. The three owl images came from one
+source and three prompt directions. All eight used the same FLUX.2 Klein 4B FP8
+route at 0.8 MP, six steps, Euler sampling, and CFG 1.0. The published files
+preserve the generated pixels while stripping the embedded ComfyUI graph and
+local file paths; raw and published hashes are kept in the experiment manifest.
 
 This is the route that makes local iteration feel different. At that latency, trying another camera angle, prop set, or lighting direction is not a batch job. It is a conversation with the image.
 
@@ -195,30 +268,6 @@ The dimension tests made the boundary obvious. Qwen could draw attractive arrows
 
 The complete prompt templates and failure notes are in [Prompt engineering](docs/prompt-engineering.md).
 
-## Local cost is not zero, but it changes behavior
-
-Cloud APIs remove setup work, scale immediately, and often offer higher absolute quality. They also meter every candidate.
-
-As of July 15, 2026:
-
-- FLUX.2 Klein 4B API image editing started around $0.014 per image;
-- Gemini 3.1 Flash Image was about $0.067 for a 1K image and $0.151 at 4K;
-- Gemini 3 Pro Image was about $0.134 for a 1K/2K image;
-- GPT Image 1 medium square images were $0.042 and high square images were $0.167, with portrait high images at $0.25.
-
-This was never about recovering the purchase price of the GPU. I have several application ideas that depend on image generation, and a credible image feature needs much more than a few attractive demos. It needs model comparisons, prompt engineering, seed exploration, performance testing, regression suites, failure analysis, and repeated evaluation across different products and asset types.
-
-A modest test matrix can become large very quickly:
-
-```text
-4 model routes * 20 products * 6 asset types * 5 prompt variants * 3 seeds
-= 7,200 generated images
-```
-
-At $0.042 per image, that matrix costs about **$302**. At $0.067, it costs about **$482**, before higher-resolution runs, rejected experiments, or another project. A serious development cycle can easily require thousands of generations, and every failure is still a billable API call.
-
-Local generation changes the kind of testing I am willing to do. I can sweep prompts, rerun a regression corpus after changing a workflow, compare quantizations, and inspect the ugly failures without watching each experiment increment an invoice. The GPU, electricity, setup, and engineering time are still real costs. The advantage is freedom to do the depth of experimentation that a good image product actually requires, across more than one project, while keeping private source material on my own machine.
-
 ## Privacy is a feature, not a slogan
 
 Some images should not be uploaded casually: family photos, home interiors, client prototypes, unreleased products, IDs in the background, or proprietary design work. Local inference lets the model weights and source stay on the workstation, and it lets me choose whether any result leaves it.
@@ -233,14 +282,28 @@ Product photography was the stress test, not the only use case.
 
 ### Private editing and restoration
 
-Old scans, family archives, and home interiors are exactly the kinds of sources
-I may not want to upload. For a publishable demonstration, I generated a
+This use case became personal for me. My dad has been using AI to repair
+damaged historical family photographs as part of our family genealogy work,
+and I am exploring whether a local workflow can help him restore more of those
+scans without uploading the family archive to a cloud service. It is a good fit
+for local image editing: the material is private, experimentation may require
+many attempts, and the original scan can remain untouched beside every repaired
+version.
+
+None of our real family photographs or restorations are included in this
+article or repository. For the publishable demonstration below, I generated a
 fictional damaged railway-depot scan with FLUX and restored it with native
-Qwen. The depot is synthetic; the workflow and the privacy boundary are real.
+Qwen. The depot is synthetic; the restoration workflow and privacy boundary
+are real.
 
 | Synthetic damaged scan | Local Qwen restoration |
 |---|---|
 | ![A synthetic damaged black-and-white railway depot scan](assets/sources/restoration-synthetic-damaged-scan.png) | ![The same synthetic depot photograph repaired into a clean monochrome scan](assets/results/qwen-restoration-synthetic-scan.png) |
+
+Generative repair also needs restraint. A plausible face, building detail, or
+piece of clothing is not necessarily historically accurate. For genealogy and
+archival work, I would keep the original scan, label the repaired image as a
+derivative, and compare every meaningful detail before treating it as evidence.
 
 ### Game assets and visual prototyping
 
