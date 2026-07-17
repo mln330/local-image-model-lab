@@ -1,6 +1,6 @@
 ---
 title: "What I Learned Running Image-Editing Models on a $530 Consumer GPU"
-description: "A hands-on investigation into FLUX.2 Klein, Qwen Image Edit, prompt engineering, VRAM, cost, and what affordable local AI can actually do."
+description: "A hands-on investigation into open-weight image models, ComfyUI, FLUX.2 Klein, Qwen Image Edit, prompt engineering, VRAM, cost, and what affordable local AI can actually do."
 author: "Mike Newman"
 date: "2026-07-15"
 ---
@@ -61,11 +61,96 @@ At $0.042 per image, that matrix costs about **$302**. At $0.067, it costs about
 
 Local generation changes the kind of testing I am willing to do. I can sweep prompts, rerun a regression corpus after changing a workflow, compare quantizations, and inspect the ugly failures without watching each experiment increment an invoice. The GPU, electricity, setup, and engineering time are still real costs. The advantage is freedom to do the depth of experimentation that a good image product actually requires, across more than one project, while keeping private source material on my own machine.
 
+## What I mean by open models
+
+"Open-source model" is often used as shorthand for any model whose weights can
+be downloaded. That is useful conversationally, but it is not always precise.
+The [Open Source AI Definition](https://opensource.org/ai/open-source-ai-definition)
+goes further than weight access: it describes freedoms to use, study, modify,
+and share the system, along with access to the preferred form for modification
+and meaningful information about the training data. Weights alone do not
+necessarily provide all of that.
+
+For this article, **open-weight** is the more accurate term for the image
+models, while **open source** describes software such as ComfyUI. The practical
+advantage of open weights is still substantial. I can download a checkpoint,
+run it without a metered API, pin the exact version, choose a quantization,
+replace the scheduler or text encoder, inspect the workflow, and compare it
+against another implementation on my own hardware.
+
+The two models I ultimately favored are unusually approachable for this kind
+of work. [FLUX.2 Klein 4B](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B)
+publishes weights for local text-to-image and image-to-image use under Apache
+2.0, and its model card explicitly targets consumer GPUs. The
+[Qwen Image Edit](https://huggingface.co/Qwen/Qwen-Image-Edit) family is also
+published under Apache 2.0. That does not make every community quantization,
+adapter, custom node, or training dataset equivalent. Each layer still needs
+its own license, provenance, and security review.
+
+Open weights shift responsibility toward the operator. I have to obtain large
+model files, manage Python and CUDA dependencies, understand VRAM limits,
+evaluate output quality, patch workflows when upstream projects change, and
+decide which third-party code I trust. The trade is control: the model can keep
+working offline, a provider cannot silently swap the implementation underneath
+my tests, and I can build repeatable experiments around a known artifact.
+
+## What ComfyUI is and why I chose it
+
+[ComfyUI](https://docs.comfy.org/) is an open-source, node-based interface and
+inference engine for generative AI. Instead of presenting one large settings
+form, it exposes the generation process as a graph. A simple image-edit graph
+might load a source image, resize it, encode it into latent space, attach it as
+a reference, load a model and text encoder, create a noise schedule, run a
+sampler, decode through a VAE, and save the result. Each box performs one job;
+the links show exactly how data moves between them.
+
+That is more complicated than typing a prompt into a website, but it was ideal
+for this experiment. I needed to change individual parts of the pipeline rather
+than treat the model as a black box:
+
+- swap native, FP8, GGUF, and NVFP4 model loaders;
+- compare text encoders, schedulers, samplers, steps, resolutions, and seeds;
+- see which component was occupying VRAM or moving through system memory;
+- preserve a complete workflow instead of relying on remembered UI settings;
+- run the same graph manually during exploration and through an API during
+  timing and regression tests.
+
+A [ComfyUI workflow](https://docs.comfy.org/development/core-concepts/workflow)
+can be saved as JSON, which made the visual graph useful as an executable
+research record. ComfyUI also runs as a client-server application and accepts
+workflows through an API. That mattered for the longer-term goal: the local UI
+could be my workbench while a script or application submitted parameterized
+versions of the same graph. The reusable API templates and runner in this
+repository came directly from that approach.
+
+ComfyUI was not the only reasonable choice:
+
+| Option | Where it shines | Tradeoff for this project |
+|---|---|---|
+| [ComfyUI](https://docs.comfy.org/) | Visual, component-level graphs; fast-moving model support; reusable JSON; local API | Powerful but initially intimidating; graphs and dependencies can become difficult to manage |
+| [Hugging Face Diffusers](https://huggingface.co/docs/diffusers/api/pipelines/overview) | Direct Python integration, testable application code, and explicit pipeline control | More code and optimization work while I was still changing the graph every few runs |
+| [InvokeAI](https://invoke.ai/) | A polished creative canvas, layer-based editing, queues, and visual workflows | Better suited to an artist-facing editing experience than my low-level loader and quantization experiments |
+| [Stable Diffusion WebUI Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge) | Familiar prompt-driven UI, extensions, resource management, and optimized inference | Convenient for straightforward generation, but less natural for documenting a multi-stage experimental graph |
+| Model publisher reference code | Closest path to the implementation described by the model author | Maximum engineering burden when comparing many models and community quantizations |
+
+If I were building a narrowly defined production worker after the research was
+settled, I would seriously consider implementing the accepted path directly in
+Diffusers or the publisher's reference runtime. For discovery, ComfyUI let me
+change one part, see the whole system, and keep moving.
+
+There is an important security cost. Custom nodes are executable third-party
+code, not harmless workflow decorations. ComfyUI's own
+[installation guidance](https://docs.comfy.org/installation/install_custom_node)
+warns users to review node sources and avoid unknown plugins. I treated custom
+nodes like application dependencies: install only what the experiment needs,
+record versions, review provenance, and never expose the raw ComfyUI API
+directly to the public internet.
+
 ## I wanted a local-AI card, not an image-only card
 
 I bought a refurbished **PNY Dual Fan OC GeForce RTX 5060 Ti 16 GB GDDR7** for **$530 in May 2026**.
 
-Image editing was one reason for the purchase, but not the only one. I wanted a machine where I could experiment with local LLMs, multimodal models, coding assistants, speech, embeddings, retrieval, and whatever interesting open model appeared next. That changed how I thought about the GPU.
+Image editing was one reason for the purchase, but not the only one. I wanted a machine where I could experiment with local LLMs, multimodal models, coding assistants, speech, embeddings, retrieval, and whatever interesting open-weight model appeared next. That changed how I thought about the GPU.
 
 An 8 GB card was not enough. It can run plenty of models, but it would force me into aggressive quantization, small context windows, CPU offload, or older image stacks too early. Twelve gigabytes looked like the minimum I was willing to consider. The 16 GB 5060 Ti deal was the best bang for the buck I could find in the low-friction CUDA ecosystem.
 
